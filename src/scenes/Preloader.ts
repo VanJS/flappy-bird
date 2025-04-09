@@ -33,6 +33,11 @@ export class Preloader extends Scene
         this.load.setPath('assets');
 
         this.load.image('logo', 'logo.png');
+
+        this.load.image('play-icon', 'play-icon.png');
+        
+        // Test Only- replace with actual duck spritesheet
+        this.load.image('duck', 'duck.png');
     }
 
     create ()
