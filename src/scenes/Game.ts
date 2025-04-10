@@ -7,6 +7,7 @@ export class Game extends Scene
     duck: Phaser.GameObjects.Image;
     pauseButton: Phaser.GameObjects.Image;
     popup: Phaser.GameObjects.Container;
+    scoreText: Phaser.GameObjects.Text;
     
     constructor ()
     {
@@ -20,8 +21,14 @@ export class Game extends Scene
 
         this.background = this.add.image(512, 384, 'background');
 
+        this.scoreText = this.add.text(450, 50, 'Score: 0', {
+            fontFamily: 'PixelGame',
+            fontSize: 18,
+            color: '#ffffff'
+        });
+
         // Test Only- replace with actual duck spritesheet
-        this.duck = this.add.image(180, 384, 'duck').setScale(0.3);
+        this.duck = this.add.image(512, 384, 'duck').setScale(0.1);
 
 
         // Add pause button
@@ -47,8 +54,8 @@ export class Game extends Scene
         
         // Add title
         const title = this.add.text(0, -100, 'Game Paused', {
-            fontFamily: 'Arial Black',
-            fontSize: 28,
+            fontFamily: 'PixelGame',
+            fontSize: 24,
             color: '#ffffff'
         }).setOrigin(0.5);
         
@@ -58,8 +65,8 @@ export class Game extends Scene
             .on('pointerdown', this.hidePopup, this);
         
         const continueText = this.add.text(0, -20, 'Continue Playing', {
-            fontFamily: 'Arial',
-            fontSize: 24,
+            fontFamily: 'PixelGame',
+            fontSize: 14,
             color: '#ffffff'
         }).setOrigin(0.5);
         
@@ -69,8 +76,8 @@ export class Game extends Scene
             .on('pointerdown', this.returnToMainMenu, this);
         
         const menuText = this.add.text(0, 60, 'Return to Main Menu', {
-            fontFamily: 'Arial',
-            fontSize: 24,
+            fontFamily: 'PixelGame',
+            fontSize: 14,
             color: '#ffffff'
         }).setOrigin(0.5);
         
