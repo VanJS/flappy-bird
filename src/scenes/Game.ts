@@ -29,11 +29,11 @@ export class Game extends Scene
         // Set up main camera
         this.camera = this.cameras.main;
         
-        // Set world bounds for our game (extend far to the right)
+        // Set world bounds for the game (extend far to the right)
         // TODO: Replace with actual bounds
         this.physics.world.setBounds(0, 0, 10000, 768);
         
-        // Create background - repeating to cover the extended world
+        // TODO: Replace with actual background
         this.background = this.add.tileSprite(0, 0, 10000, 768, 'background')
             .setOrigin(0, 0)
             .setScrollFactor(0.8);
@@ -50,7 +50,7 @@ export class Game extends Scene
         this.camera.startFollow(this.duck, true, 0.5, 0.5);
         this.camera.setBounds(0, 0, 10000, 768);
         
-        // TODO: Create a UI camera that doesn't move
+        // TODO: Create a UI camera that doesn't move the buttons and score text
         this.uiCamera = this.cameras.add(0, 0, 1024, 768);
         this.uiCamera.setScroll(0, 0);
         this.uiCamera.setName('UICamera');
