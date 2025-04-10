@@ -1,6 +1,6 @@
 
-import { BaseObject } from '../utils/interfaces/object-interface';
-import { IExtendedScene } from '../utils/interfaces/scene-interface';
+import { Game } from '../scenes/Game.ts'
+import { BaseObject } from '../utils/interfaces/object-abstract-class.ts';
 import * as CONFIG from '../utils/configuration.ts'
 
 export class Bird extends BaseObject {
@@ -9,7 +9,7 @@ export class Bird extends BaseObject {
     private y = 0;
     private idleDirection = 1;
 
-    constructor(scene: IExtendedScene) {
+    constructor(scene: Phaser.Scene) {
         super(scene);  
         this.init();
    
@@ -25,7 +25,6 @@ export class Bird extends BaseObject {
         .setScale(1.5)
         .setDepth(CONFIG.BIRD_DEPTH)
         .play('bird_sprite');
-        // this.bird.setAccelerationY(0);
     }
 
     update() {
@@ -33,7 +32,8 @@ export class Bird extends BaseObject {
             return;
         }
         // create swing effect before game start
-        if(! this.scene.gameStarted) {
+        const gameScene = this.scene as Game
+        if(! gameScene.gameStarted) {
             if (this.bird.y < this.y - CONFIG.IDLE_OFFEST_Y) {
                 this.idleDirection *= -1;
             } else if(this.bird.y > this.y + CONFIG.IDLE_OFFEST_Y) {

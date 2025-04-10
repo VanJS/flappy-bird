@@ -1,5 +1,4 @@
-import { BaseObject } from "../utils/interfaces/object-interface";
-import { IExtendedScene } from "../utils/interfaces/scene-interface";
+import { BaseObject } from "../utils/interfaces/object-abstract-class.ts";
 import * as CONFIG from '../utils/configuration.ts'
 
 export class Ground extends BaseObject {
@@ -26,7 +25,7 @@ export class Ground extends BaseObject {
         if(!this.ground) {
             return;
         }
-
+        // create scrolling effects
         this.ground.tilePositionX += CONFIG.GROUND_SPEED;
         
     }

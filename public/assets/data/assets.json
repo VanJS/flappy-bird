@@ -4,8 +4,8 @@
       "files": [
         {
           "type": "image",
-          "key": "bg",
-          "url": "bg.png"
+          "key": "game-bg",
+          "url": "game-bg.png"
         },
         {
           "type": "image",

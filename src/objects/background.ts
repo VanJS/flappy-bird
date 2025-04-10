@@ -1,5 +1,4 @@
-import { BaseObject } from "../utils/interfaces/object-interface";
-import { IExtendedScene } from "../utils/interfaces/scene-interface";
+import { BaseObject } from "../utils/interfaces/object-abstract-class.ts";
 import * as CONFIG from '../utils/configuration.ts'
 
 export class Background extends BaseObject {
@@ -16,7 +15,7 @@ export class Background extends BaseObject {
             0, 
             this.scene.cameras.main.width, 
             this.scene.cameras.main.height, 
-            'bg'
+            'game-bg'
         )
         .setOrigin(0)
         .setDepth(CONFIG.BACKGROUND_DEPTH);
@@ -26,6 +25,7 @@ export class Background extends BaseObject {
         if (!this.sprite) {
             return;
         }
+        // create scrolling effects
         this.sprite.tilePositionX += CONFIG.BACKGROUND_SPEED;
     }
 }

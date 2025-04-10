@@ -1,4 +1,4 @@
-import { BaseObject } from "../../utils/interfaces/object-interface";
+import { BaseObject } from "../../utils/interfaces/object-abstract-class.ts";
 import * as CONFIG from '../../utils/configuration.ts'
 
 export class Pipes extends BaseObject {
@@ -20,6 +20,6 @@ export class Pipes extends BaseObject {
     }
 
     update(){
-        
+        // TODO: generate random pipes 
     }
 }

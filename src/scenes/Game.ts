@@ -1,7 +1,7 @@
 import { Scene } from 'phaser';
 import { Bird } from '../objects/bird.ts';
 import { Cloud } from '../objects/obstacles/cloud.ts';
-import { BaseObject } from '../utils/interfaces/object-interface.ts';
+import { BaseObject } from '../utils/interfaces/object-abstract-class.ts';
 import { Background } from '../objects/background.ts';
 import * as CONFIG from '../utils/configuration.ts'
 import { Pipes } from '../objects/obstacles/pipes.ts';
@@ -11,8 +11,8 @@ export class Game extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
     msg_text : Phaser.GameObjects.Text;
 
-    private gameStarted = false;
-    private gameOver = false;
+    private isGameStarted = false;
+    private isGameOver = false;
 
     private gameObjects: BaseObject[] = [];
 
@@ -26,16 +26,17 @@ export class Game extends Scene {
         this.load.pack('asset_pack', 'assets/data/assets.json');
     }
 
-    get GameStarted() {
-        return this.gameStarted;
+    get gameStarted() {
+        return this.isGameStarted;
     }
 
-    get GameOver() {
-        return this.gameOver;
+    get gameOver() {
+        return this.isGameOver;
     }
 
     create ()
     {  
+        // create objects to the screen
         this.gameObjects.push(
             new Background(this), 
             new Ground(this), 

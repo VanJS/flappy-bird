@@ -1,6 +1,5 @@
 
-import { BaseObject } from '../../utils/interfaces/object-interface';
-import { IExtendedScene } from '../../utils/interfaces/scene-interface';
+import { BaseObject } from '../../utils/interfaces/object-abstract-class.ts';
 import * as CONFIG from '../../utils/configuration.ts'
 
 export class Cloud extends BaseObject {
@@ -13,6 +12,7 @@ export class Cloud extends BaseObject {
     }
 
     init(): void {
+        // TODO: change the depth
         const cloud = this.scene.physics.add.sprite(
             this.scene.cameras.main.width / 2, 
             this.scene.cameras.main.height / 2, 
@@ -21,6 +21,7 @@ export class Cloud extends BaseObject {
         .setDepth(CONFIG.PIPE_DEPTH);
     }
     update(): void {
+        // TODO: generate random clouds 
         
     }
 
