@@ -17,20 +17,28 @@ export class Game extends Scene
         super('Game');
     }
 
+    init()
+    {
+        // Reset game state variables when scene starts or restarts
+        this.isGamePaused = false;
+        this.score = 0;
+    }
+
     create ()
     {
         // Set up main camera
         this.camera = this.cameras.main;
         
         // Set world bounds for our game (extend far to the right)
+        // TODO: Replace with actual bounds
         this.physics.world.setBounds(0, 0, 10000, 768);
         
         // Create background - repeating to cover the extended world
         this.background = this.add.tileSprite(0, 0, 10000, 768, 'background')
             .setOrigin(0, 0)
-            .setScrollFactor(0.8); // Parallax effect
+            .setScrollFactor(0.8);
         
-        // Create the duck with physics
+        // TODO: Test only- replace with actual duck spritesheet
         this.duck = this.physics.add.sprite(200, 384, 'duck')
             .setScale(0.1)
             .setCollideWorldBounds(true);
@@ -42,12 +50,12 @@ export class Game extends Scene
         this.camera.startFollow(this.duck, true, 0.5, 0.5);
         this.camera.setBounds(0, 0, 10000, 768);
         
-        // Create a UI camera that doesn't move
+        // TODO: Create a UI camera that doesn't move
         this.uiCamera = this.cameras.add(0, 0, 1024, 768);
         this.uiCamera.setScroll(0, 0);
         this.uiCamera.setName('UICamera');
         
-        // UI elements
+        // Score text
         this.scoreText = this.add.text(450, 50, 'Score: 0', {
             fontFamily: 'PixelGame',
             fontSize: 18,
@@ -153,6 +161,8 @@ export class Game extends Scene
     }
     
     returnToMainMenu() {
+        // Stop all timers and clean up the scene
+        this.scene.stop();
         this.scene.start('MainMenu');
     }
 }
