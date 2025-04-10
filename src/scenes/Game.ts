@@ -1,35 +1,59 @@
 import { Scene } from 'phaser';
-
-export class Game extends Scene
-{
+import { Bird } from '../objects/bird.ts';
+import { Cloud } from '../objects/obstacles/cloud.ts';
+import { BaseObject } from '../utils/interfaces/object-interface.ts';
+import { Background } from '../objects/background.ts';
+import * as CONFIG from '../utils/configuration.ts'
+import { Pipes } from '../objects/obstacles/pipes.ts';
+import { Ground } from '../objects/ground.ts';
+import { Thunder } from '../objects/obstacles/thunder.ts';
+export class Game extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
-    background: Phaser.GameObjects.Image;
     msg_text : Phaser.GameObjects.Text;
+
+    private gameStarted = false;
+    private gameOver = false;
+
+    private gameObjects: BaseObject[] = [];
 
     constructor ()
     {
         super('Game');
     }
 
+    preload() {
+
+        this.load.pack('asset_pack', 'assets/data/assets.json');
+    }
+
+    get GameStarted() {
+        return this.gameStarted;
+    }
+
+    get GameOver() {
+        return this.gameOver;
+    }
+
     create ()
-    {
-        this.camera = this.cameras.main;
-        this.camera.setBackgroundColor(0x00ff00);
+    {  
+        this.gameObjects.push(
+            new Background(this), 
+            new Ground(this), 
+            new Bird(this), 
+            new Pipes(this), 
+            new Cloud(this),
+            new Thunder(this)
+        );
 
-        this.background = this.add.image(512, 384, 'background');
-        this.background.setAlpha(0.5);
-
-        this.msg_text = this.add.text(512, 384, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        });
-        this.msg_text.setOrigin(0.5);
-
+        
         this.input.once('pointerdown', () => {
 
             this.scene.start('GameOver');
 
         });
+    }
+
+    update () {
+        this.gameObjects.forEach((object) => object.update());
     }
 }
