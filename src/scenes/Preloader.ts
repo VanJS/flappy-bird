@@ -12,7 +12,7 @@ export class Preloader extends Scene {
     init ()
     {
         //  We loaded this image in our Boot Scene, so we can display it here
-        this.add.image(512, 384, 'background');
+        this.add.image(512, 384, 'menu-bg');
 
         //  A simple progress bar. This is the outline of the bar.
         this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
@@ -31,6 +31,10 @@ export class Preloader extends Scene {
 
     preload ()
     {
+
+        //  preload animation json file
+        this.load.json('animations_json', 'assets/data/animations.json'); 
+        
         //  Load the assets for the game 
         this.load.pack('asset_pack', 'assets/data/assets.json');
         
@@ -38,13 +42,13 @@ export class Preloader extends Scene {
         // Load custom font
         this.load.font(
             'PixelGame',
-            '/assets/fonts/PressStart2P-Regular.ttf',
+            'assets/fonts/PressStart2P-Regular.ttf',
             'truetype'
         );
 
         this.load.font(
             'Kenney-Future-Narrow',
-            '/assets/fonts/Kenney-Future-Narrow.ttf',
+            'assets/fonts/Kenney-Future-Narrow.ttf',
             'truetype'
         );
 

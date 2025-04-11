@@ -4,6 +4,11 @@
       "files": [
         {
           "type": "image",
+          "key": "menu-bg",
+          "url": "menu-bg.png"
+        },
+        {
+          "type": "image",
           "key": "logo",
           "url": "logo.png"
         },

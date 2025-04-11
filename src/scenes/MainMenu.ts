@@ -14,12 +14,12 @@ export class MainMenu extends Scene
 
     create ()
     {
-        this.background = this.add.image(512, 384, 'background');
+        this.background = this.add.image(512, 384, 'menu-bg');
 
-        this.logo = this.add.image(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2, 'logo').setScale(0.5);
+        this.logo = this.add.image(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2 - 40, 'logo').setScale(0.3);
 
-        this.title = this.add.text(512, 560, 'Click to Start', {
-            fontFamily: 'PixelGame', fontSize: 38, color: '#ffffff',
+        this.title = this.add.text(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2 + 100, 'Click to Start', {
+            fontFamily: 'PixelGame', fontSize: 18, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
