@@ -9,8 +9,7 @@ export class Boot extends Scene
 
     preload ()
     {
-        //  preload animation json file
-        this.load.json('animations_json', 'assets/data/animations.json');  
+        this.load.image('menu-bg', 'assets/images/menu-bg.png');
     }
 
     create ()

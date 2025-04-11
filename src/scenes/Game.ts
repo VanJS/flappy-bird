@@ -31,10 +31,6 @@ export class Game extends Scene
         super('Game');
     }
 
-    preload() {
-
-        this.load.pack('asset_pack', 'assets/data/assets.json');
-    }
 
     get gameStarted() {
         return this.isGameStarted;
@@ -74,14 +70,6 @@ export class Game extends Scene
         // Set the duck to move constantly to the right
         this.duck.setVelocityX(200);
         
-        // Make camera follow the duck
-        this.camera.startFollow(this.duck, true, 0.5, 0.5);
-        this.camera.setBounds(0, 0, 10000, 768);
-        
-        // TODO: Create a UI camera that doesn't move the buttons and score text
-        this.uiCamera = this.cameras.add(0, 0, CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
-        this.uiCamera.setScroll(0, 0);
-        this.uiCamera.setName('UICamera');
         
         // Score text
         this.scoreText = this.add.text(450, 50, 'Score: 0', {
