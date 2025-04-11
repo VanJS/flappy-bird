@@ -17,7 +17,7 @@ const phasermsg = () => {
 }   
 
 export default defineConfig({
-    base: './',
+    base: '/flappy-bird/',
     logLevel: 'warning',
     build: {
         rollupOptions: {
