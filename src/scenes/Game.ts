@@ -141,7 +141,7 @@ export class Game extends Scene
 
     createPopup() {
         // Create a container for the popup (initially hidden)
-        this.popup = this.add.container(512, 384).setVisible(false).setScrollFactor(0).setDepth(200);
+        this.popup = this.add.container(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2).setVisible(false).setScrollFactor(0).setDepth(200);
         
         // Add semi-transparent background overlay
         const overlay = this.add.rectangle(0, 0, 1024, 768, 0x000000, 0.7);
