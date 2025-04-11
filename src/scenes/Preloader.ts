@@ -27,12 +27,29 @@ export class Preloader extends Scene {
             bar.width = 4 + (460 * progress);
 
         });
+
+        
     }
 
     preload ()
     {
-        //  Load the assets for the game - Replace with your own assets
+        //  Load the assets for the game 
         this.load.pack('asset_pack', 'assets/data/assets.json');
+        
+        
+        // Load custom font
+        this.load.font(
+            'PixelGame',
+            '/assets/fonts/PressStart2P-Regular.ttf',
+            'truetype'
+        );
+
+        this.load.font(
+            'Kenney-Future-Narrow',
+            '/assets/fonts/Kenney-Future-Narrow.ttf',
+            'truetype'
+        );
+
         
     }
 

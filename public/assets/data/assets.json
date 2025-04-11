@@ -4,6 +4,21 @@
       "files": [
         {
           "type": "image",
+          "key": "logo",
+          "url": "logo.png"
+        },
+        {
+          "type": "image",
+          "key": "play-icon",
+          "url": "play-icon.png"
+        },
+        {
+          "type": "image",
+          "key": "duck",
+          "url": "duck.png"
+        },
+        {
+          "type": "image",
           "key": "game-bg",
           "url": "game-bg.png"
         },

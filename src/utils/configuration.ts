@@ -1,4 +1,4 @@
-export const GAME_WIDTH = 1200;
+export const GAME_WIDTH = 1024;
 export const GAME_HEIGHT = 512;
 export const BACKGROUND_DEPTH = 0;
 export const BACKGROUND_SPEED = 1;

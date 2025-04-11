@@ -1,6 +1,5 @@
 import { Boot } from './scenes/Boot.ts';
 import { Game as MainGame } from './scenes/Game.ts';
-import { GameOver } from './scenes/GameOver.ts';
 import { MainMenu } from './scenes/MainMenu.ts';
 import { Preloader } from './scenes/Preloader.ts';
 import * as CONFIG from './utils/configuration.ts'
@@ -30,7 +29,6 @@ const config: Types.Core.GameConfig = {
         Preloader,
         MainMenu,
         MainGame,
-        GameOver
     ]
 };
 
