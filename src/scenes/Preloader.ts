@@ -25,6 +25,8 @@ export class Preloader extends Scene
             bar.width = 4 + (460 * progress);
 
         });
+
+        
     }
 
     preload ()
@@ -33,6 +35,26 @@ export class Preloader extends Scene
         this.load.setPath('assets');
 
         this.load.image('logo', 'logo.png');
+
+        this.load.image('play-icon', 'play-icon.png');
+        
+        // Test Only- replace with actual duck spritesheet
+        this.load.image('duck', 'duck.png');
+
+        // Load custom font
+        this.load.font(
+            'PixelGame',
+            'fonts/PressStart2P-Regular.ttf',
+            'truetype'
+        );
+
+        this.load.font(
+            'Kenney-Future-Narrow',
+            'fonts/Kenney-Future-Narrow.ttf',
+            'truetype'
+        );
+
+        
     }
 
     create ()
