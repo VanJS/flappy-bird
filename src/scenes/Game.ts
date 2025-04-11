@@ -12,6 +12,13 @@ export class Game extends Scene
     isGamePaused: boolean = false;
     score: number = 0;
     
+    // Input control
+    spaceKey: Phaser.Input.Keyboard.Key;
+    
+    // Game settings
+    readonly FLAP_VELOCITY: number = -300;
+    readonly GRAVITY: number = 800;
+    
     constructor ()
     {
         super('Game');
@@ -30,15 +37,17 @@ export class Game extends Scene
         this.camera = this.cameras.main;
         
         // Set world bounds for the game (extend far to the right)
-        // TODO: Replace with actual bounds
         this.physics.world.setBounds(0, 0, 10000, 768);
         
-        // TODO: Replace with actual background
+        // Enable gravity
+        this.physics.world.gravity.y = this.GRAVITY;
+        
+        // Background
         this.background = this.add.tileSprite(0, 0, 10000, 768, 'background')
             .setOrigin(0, 0)
             .setScrollFactor(0.8);
         
-        // TODO: Test only- replace with actual duck spritesheet
+        // Create the duck
         this.duck = this.physics.add.sprite(200, 384, 'duck')
             .setScale(0.1)
             .setCollideWorldBounds(true);
@@ -46,11 +55,17 @@ export class Game extends Scene
         // Set the duck to move constantly to the right
         this.duck.setVelocityX(200);
         
+        // Set up space key for flapping
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        
+        // Enable click/tap input for flapping
+        this.input.on('pointerdown', this.flapDuck, this);
+        
         // Make camera follow the duck
         this.camera.startFollow(this.duck, true, 0.5, 0.5);
         this.camera.setBounds(0, 0, 10000, 768);
         
-        // TODO: Create a UI camera that doesn't move the buttons and score text
+        // UI camera that doesn't move with the game world
         this.uiCamera = this.cameras.add(0, 0, 1024, 768);
         this.uiCamera.setScroll(0, 0);
         this.uiCamera.setName('UICamera');
@@ -82,12 +97,38 @@ export class Game extends Scene
         });
     }
     
+    flapDuck() {
+        // Don't flap if game is paused
+        if (this.isGamePaused) return;
+        
+        // Apply upward velocity (flap)
+        this.duck.setVelocityY(this.FLAP_VELOCITY);
+        
+        // Add a slight upward rotation when flapping
+        this.duck.angle = -15;
+    }
+    
     update() {
-        // Only move the duck when the game is not paused
-        if (!this.isGamePaused) {
-            this.duck.setVelocityX(200);
-        } else {
+        // Only update when the game is not paused
+        if (this.isGamePaused) {
             this.duck.setVelocityX(0);
+            return;
+        }
+        
+        // Maintain horizontal velocity
+        this.duck.setVelocityX(200);
+        
+        // Flap when space is pressed
+        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+            this.flapDuck();
+        }
+        
+        // Rotate duck based on velocity (point downward when falling)
+        if (this.duck.body.velocity.y > 0) {
+            // Falling down - rotate downward gradually
+            if (this.duck.angle < 90) {
+                this.duck.angle += 2;
+            }
         }
     }
     
@@ -147,8 +188,12 @@ export class Game extends Scene
         
         if (this.isGamePaused) {
             this.showPopup();
+            // Pause physics when game is paused
+            this.physics.pause();
         } else {
             this.hidePopup();
+            // Resume physics when game continues
+            this.physics.resume();
         }
     }
     
