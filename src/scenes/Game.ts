@@ -1,8 +1,22 @@
 import { Scene } from 'phaser';
+import * as CONFIG from '../utils/configuration.ts'
+import { BaseObject } from '../utils/interfaces/object-abstract-class';
+import { Background } from '../objects/background';
+import { Ground } from '../objects/ground';
+import { Bird } from '../objects/bird';
+import { Pipes } from '../objects/obstacles/pipes';
+import { Cloud } from '../objects/obstacles/cloud';
+import { Thunder } from '../objects/obstacles/thunder';
 
 export class Game extends Scene
 {
+
     camera: Phaser.Cameras.Scene2D.Camera;
+    private isGameStarted: boolean = false;
+    private isGameOver: boolean = false;
+
+    private gameObjects: BaseObject[] = [];
+
     background: Phaser.GameObjects.TileSprite;
     duck: Phaser.Physics.Arcade.Sprite;
     pauseButton: Phaser.GameObjects.Image;
@@ -15,6 +29,19 @@ export class Game extends Scene
     constructor ()
     {
         super('Game');
+    }
+
+    preload() {
+
+        this.load.pack('asset_pack', 'assets/data/assets.json');
+    }
+
+    get gameStarted() {
+        return this.isGameStarted;
+    }
+
+    get gameOver() {
+        return this.isGameOver;
     }
 
     init()
@@ -31,17 +58,18 @@ export class Game extends Scene
         
         // Set world bounds for the game (extend far to the right)
         // TODO: Replace with actual bounds
-        this.physics.world.setBounds(0, 0, 10000, 768);
+        this.physics.world.setBounds(0, 0, 10000, CONFIG.GAME_HEIGHT);
         
         // TODO: Replace with actual background
-        this.background = this.add.tileSprite(0, 0, 10000, 768, 'background')
+        this.background = this.add.tileSprite(0, 0, 10000, CONFIG.GAME_HEIGHT, 'background')
             .setOrigin(0, 0)
             .setScrollFactor(0.8);
         
         // TODO: Test only- replace with actual duck spritesheet
         this.duck = this.physics.add.sprite(200, 384, 'duck')
             .setScale(0.1)
-            .setCollideWorldBounds(true);
+            .setCollideWorldBounds(true)
+            .setDepth(CONFIG.BIRD_DEPTH);
             
         // Set the duck to move constantly to the right
         this.duck.setVelocityX(200);
@@ -51,7 +79,7 @@ export class Game extends Scene
         this.camera.setBounds(0, 0, 10000, 768);
         
         // TODO: Create a UI camera that doesn't move the buttons and score text
-        this.uiCamera = this.cameras.add(0, 0, 1024, 768);
+        this.uiCamera = this.cameras.add(0, 0, CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
         this.uiCamera.setScroll(0, 0);
         this.uiCamera.setName('UICamera');
         
@@ -80,6 +108,16 @@ export class Game extends Scene
             callbackScope: this,
             loop: true
         });
+
+        // create objects to the screen
+        this.gameObjects.push(
+            new Background(this), 
+            new Ground(this), 
+            new Bird(this), 
+            new Pipes(this), 
+            new Cloud(this),
+            new Thunder(this)
+        );
     }
     
     update() {
@@ -89,6 +127,9 @@ export class Game extends Scene
         } else {
             this.duck.setVelocityX(0);
         }
+
+        // call update of each object
+        this.gameObjects.forEach((object) => object.update());
     }
     
     updateScore() {
@@ -100,7 +141,7 @@ export class Game extends Scene
 
     createPopup() {
         // Create a container for the popup (initially hidden)
-        this.popup = this.add.container(512, 384).setVisible(false).setScrollFactor(0).setDepth(200);
+        this.popup = this.add.container(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2).setVisible(false).setScrollFactor(0).setDepth(200);
         
         // Add semi-transparent background overlay
         const overlay = this.add.rectangle(0, 0, 1024, 768, 0x000000, 0.7);

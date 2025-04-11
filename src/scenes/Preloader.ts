@@ -1,7 +1,9 @@
 import { Scene } from 'phaser';
+import { AnimationData } from '../utils/interfaces/animation-interface';
 
-export class Preloader extends Scene
-{
+export class Preloader extends Scene {
+    private animationData: AnimationData[]
+
     constructor ()
     {
         super('Preloader');
@@ -25,32 +27,24 @@ export class Preloader extends Scene
             bar.width = 4 + (460 * progress);
 
         });
-
-        
     }
 
     preload ()
     {
-        //  Load the assets for the game - Replace with your own assets
-        this.load.setPath('assets');
-
-        this.load.image('logo', 'logo.png');
-
-        this.load.image('play-icon', 'play-icon.png');
+        //  Load the assets for the game 
+        this.load.pack('asset_pack', 'assets/data/assets.json');
         
-        // Test Only- replace with actual duck spritesheet
-        this.load.image('duck', 'duck.png');
-
+        
         // Load custom font
         this.load.font(
             'PixelGame',
-            'fonts/PressStart2P-Regular.ttf',
+            '/assets/fonts/PressStart2P-Regular.ttf',
             'truetype'
         );
 
         this.load.font(
             'Kenney-Future-Narrow',
-            'fonts/Kenney-Future-Narrow.ttf',
+            '/assets/fonts/Kenney-Future-Narrow.ttf',
             'truetype'
         );
 
@@ -62,7 +56,29 @@ export class Preloader extends Scene
         //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
         //  For example, you can define global animations here, so we can use them in other scenes.
 
+        // create animations
+        this.createAnimations();
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         this.scene.start('MainMenu');
+    };
+
+    createAnimations() {
+        
+        this.animationData = this.cache.json.get('animations_json');
+
+        /* Loop through to load the animation */
+        this.animationData.forEach((animation: AnimationData) => {
+            /* Create an array of frame objects */
+            const frames = animation.frames
+            ? this.anims.generateFrameNames(animation.assetKey, {frames: animation.frames as number[]})
+            : this.anims.generateFrameNames(animation.assetKey); 
+        
+            this.anims.create({
+            key: animation.key,
+            frames: frames,
+            frameRate: animation.frameRate,
+            repeat: animation.repeat,
+            });
+        });
     }
 }

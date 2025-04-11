@@ -1,4 +1,5 @@
 import { Scene, GameObjects } from 'phaser';
+import * as CONFIG from '../utils/configuration.ts'
 
 export class MainMenu extends Scene
 {
@@ -15,7 +16,7 @@ export class MainMenu extends Scene
     {
         this.background = this.add.image(512, 384, 'background');
 
-        this.logo = this.add.image(500, 250, 'logo').setScale(0.5);
+        this.logo = this.add.image(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2, 'logo').setScale(0.5);
 
         this.title = this.add.text(512, 560, 'Click to Start', {
             fontFamily: 'PixelGame', fontSize: 38, color: '#ffffff',

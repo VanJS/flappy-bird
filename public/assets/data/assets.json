@@ -1,0 +1,53 @@
+[
+    {
+      "path": "assets/images",
+      "files": [
+        {
+          "type": "image",
+          "key": "logo",
+          "url": "logo.png"
+        },
+        {
+          "type": "image",
+          "key": "play-icon",
+          "url": "play-icon.png"
+        },
+        {
+          "type": "image",
+          "key": "duck",
+          "url": "duck.png"
+        },
+        {
+          "type": "image",
+          "key": "game-bg",
+          "url": "game-bg.png"
+        },
+        {
+          "type": "image",
+          "key": "ground",
+          "url": "ground.png"
+        },
+        {
+            "type": "image",
+            "key": "cloud",
+            "url": "cloud.png"
+          },
+          {
+            "type": "image",
+            "key": "pipe",
+            "url": "pipe-green.png"
+          },
+          {
+            "type": "image",
+            "key": "thunder",
+            "url": "thunder.png"
+          },
+        {
+          "type": "spritesheet",
+          "key": "bird_sprite",
+          "url": "bird-sprite.png",
+          "frameConfig": { "frameWidth": 34, "frameHeight": 24 }
+        }
+      ]
+    }
+]
