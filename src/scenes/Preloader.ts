@@ -43,15 +43,15 @@ export class Preloader extends Scene
 
         // Load custom font
         this.load.font(
-        'PixelGame',
-        'https://raw.githubusercontent.com/google/fonts/refs/heads/main/ofl/pressstart2p/PressStart2P-Regular.ttf',
-        'truetype'
+            'PixelGame',
+            'fonts/PressStart2P-Regular.ttf',
+            'truetype'
         );
 
         this.load.font(
-        'Kenney-Future-Narrow',
-        'assets/fonts/Kenney-Future-Narrow.ttf',
-        'truetype'
+            'Kenney-Future-Narrow',
+            'fonts/Kenney-Future-Narrow.ttf',
+            'truetype'
         );
 
         
