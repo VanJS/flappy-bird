@@ -44,6 +44,13 @@ export class Game extends Scene
         return this.isGameOver;
     }
 
+    init()
+    {
+        // Reset game state variables when scene starts or restarts
+        this.isGamePaused = false;
+        this.score = 0;
+    }
+
     create ()
     {
         // Set up main camera
