@@ -10,3 +10,6 @@ export const BIRD_OFFSET_X = 100;
 export const IDLE_OFFEST_Y = 20;
 
 export const PIPE_DEPTH = 2;
+
+export const JUMP_STRENGTH = 350;
+export const GRAVITY = 20;
