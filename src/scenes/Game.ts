@@ -45,6 +45,16 @@ export class Game extends Scene
         // Reset game state variables when scene starts or restarts
         this.isGamePaused = false;
         this.score = 0;
+        
+    }
+
+    startGame() {
+        this.isGameStarted = true;
+        
+        // Apply gravity to the world
+        this.physics.world.gravity.y = CONFIG.GRAVITY;
+        
+
     }
 
     create ()
@@ -69,7 +79,7 @@ export class Game extends Scene
             
         // Set the duck to move constantly to the right
         this.duck.setVelocityX(200);
-        
+        this.duck.setVisible(false);
         
         // Score text
         this.scoreText = this.add.text(450, 50, 'Score: 0', {
