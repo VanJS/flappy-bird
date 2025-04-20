@@ -53,6 +53,23 @@ export class Bird extends BaseObject {
         }
     }
 
+    handleCollision(): void {
+        if (!this.bird) {
+            return;
+        }
+        
+        // Completely stop the bird's movement
+        this.bird.setVelocity(0, 0);
+        
+        // Disable physics to ensure it doesn't move
+        if (this.bird.body) {
+            this.bird.body.enable = false;
+        }
+        
+        // Stop any animations that might be playing
+        this.bird.anims.stop();
+    }
+
     update() {
         if (!this.bird) {
             return;

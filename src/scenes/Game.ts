@@ -224,31 +224,21 @@ export class Game extends Scene
     handleGroundCollision() {
         if (!this.isGameOver) {
             this.isGameOver = true;
+
+            // Find the Bird object using instanceof
+            const birdObject = this.gameObjects.find(obj => obj instanceof Bird) as Bird | undefined;
+            if (birdObject) {
+                // Let the bird handle its own collision response
+                birdObject.handleCollision();
+            }
             
-            // Stop the bird's movement
-            const bird = (this.gameObjects[2] as Bird).getBird();
-            if (bird) {
-                bird.setVelocity(0, 0);
-            }
-            if (bird) {
-                // Completely stop the bird's movement
-                bird.setVelocity(0, 0);
-                
-                // Disable physics to ensure it doesn't move
-                if (bird.body) {
-                    bird.body.enable = false;
-                    bird.body.moves = false;  // This prevents any physics movement
-                }
-                
-                // Make sure no animations are playing
-                bird.anims.stop();
-            }
-
+            // Pause the entire physics system
             this.physics.pause();
-
+            
+            // Stop all game timers
             this.time.paused = true;
             
-            // Display game over text or perform other end-game actions
+            // Display game over text
             this.add.text(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2, 'Game Over', {
                 fontFamily: 'PixelGame',
                 fontSize: 32,
@@ -265,10 +255,11 @@ export class Game extends Scene
                 stroke: '#000000',
                 strokeThickness: 4
             }).setOrigin(0.5).setScrollFactor(0).setDepth(200)
-              .setInteractive()
-              .on('pointerdown', () => {
-                  this.scene.restart();
-              });
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.scene.restart();
+            });
+        
         }
     }
 
