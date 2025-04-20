@@ -11,7 +11,7 @@ export const IDLE_OFFEST_Y = 20;
 
 export const PIPE_DEPTH = 2;
 export const PIPE_OFFSET_X = 500;
-export const PIPE_GAP_X = 350;
+export const PIPE_GAP_X = 700;
 export const PIPE_GAP_Y = 300;
 
 export const JUMP_STRENGTH = 350;

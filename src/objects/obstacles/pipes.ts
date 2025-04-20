@@ -5,7 +5,9 @@ import { generateRandom } from "../../utils/generateRandom.ts";
 
 export class Pipes extends BaseObject {
 
-    private pipes: Phaser.Physics.Arcade.Sprite[][] = [];
+    private pipes: Phaser.Physics.Arcade.Sprite[] = [];
+    private initialPos_X: number;
+    
     
     constructor(scene: Phaser.Scene) {
         super(scene);
@@ -13,6 +15,7 @@ export class Pipes extends BaseObject {
     }
 
     init() {
+        this.initialPos_X = this.scene.cameras.main.width + CONFIG.PIPE_OFFSET_X;
     }
 
     private createPipe (x: number, y: number, rotation: number ): Phaser.Physics.Arcade.Sprite {
@@ -21,66 +24,82 @@ export class Pipes extends BaseObject {
             y, 
             'pipe'
         )
-        .setDepth(CONFIG.PIPE_DEPTH)
-        .setRotation(rotation);
+            .setDepth(CONFIG.PIPE_DEPTH)
+            .setRotation(rotation);
         pipe.setVisible(true);
         return pipe;
     }
 
-    private generatePipes() {
-
-        // initial position
-        const initialPos_X = this.scene.cameras.main.width + CONFIG.PIPE_OFFSET_X;
-        console.log("initialPos_X:", initialPos_X);
-        //if still pipes left
+    /**
+     * remove pipes that is off screen
+     */
+    private removeOffScreenPipes() {
         if(this.pipes.length) {
-            const firstTopPipe = this.pipes[0][0];
-            // if the first pipe is completely off-screen, clear the top and bottom pipe set
-            if (firstTopPipe.x + firstTopPipe.displayWidth < 0){
-                const pair = this.pipes.shift();
-                if(pair) {
-                    const[topPipe, botPipe] = pair;
-                    topPipe.destroy();
-                    botPipe.destroy();
-                }  
-            }
-            // check if add new pipes
-            const lastTopPipe = this.pipes[this.pipes.length - 1][0]
-            if(initialPos_X - lastTopPipe.x <  CONFIG.PIPE_GAP_X ) return;
+            const visiblePipes: Phaser.Physics.Arcade.Sprite[] = [];
+            this.pipes.forEach((pipe) =>{
+                // still on screen, push to visible array
+                if(pipe && pipe.x + pipe.displayWidth / 2 > 0){
+                    visiblePipes.push(pipe);
+                } else {
+                    // off screen, destroy
+                    pipe.destroy();
+                    //debugging
+                    console.log(`Destroy pipes at x: ${pipe.x}, y: ${pipe.y}`);
+                }
+            })
+            this.pipes = visiblePipes;
         }
+    }
 
-        //add new bottom pipe 
-        const bottomPipe = this.createPipe (initialPos_X, 0, 0);
+    /**
+     * check if its time to generate new pipe
+     * @returns boolean
+     */
+    private shouldGenerateNewPipe() {
+        if (this.pipes.length === 0) return true;
+        const lastTopPipe = this.pipes[this.pipes.length - 1]
+        return this.initialPos_X - lastTopPipe.x >=  CONFIG.PIPE_GAP_X;
+    }
 
-        //randomly generate position on Y of bottom pipe
+    /**
+     * randomly generate new top and bottom pipes
+     */
+    private generatePipes() {
+        //create new bottom pipe 
+        const bottomPipe = this.createPipe (this.initialPos_X, 0, 0);
+
+        //randomly generate Y position of bottom pipe
         const minBottomY = this.scene.cameras.main.height - bottomPipe.displayHeight / 2 +  CONFIG.GROUND_HEIGHT
-        const maxBottonY = this.scene.cameras.main.height +  bottomPipe.displayHeight / 2 -  CONFIG.GROUND_HEIGHT
+        const maxBottonY = this.scene.cameras.main.height + CONFIG.GROUND_HEIGHT
         const bottomY = generateRandom(minBottomY, maxBottonY);
         bottomPipe.setY(bottomY);
         
-        //add new top pipe 
-        const topPipe = this.createPipe(initialPos_X, 0, Math.PI);
+        //create new top pipe 
+        const topPipe = this.createPipe(this.initialPos_X, 0, Math.PI);
 
-        //Y of top pipe to keep the gap
+        //calculate Y position of top pipe to keep the gap
         const topY = bottomY - bottomPipe.displayHeight / 2 - CONFIG.PIPE_GAP_Y;
         topPipe.setY(topY);
 
         // push to the lists
-        this.pipes.push([topPipe, bottomPipe]);
+        this.pipes.push(topPipe, bottomPipe);
+
         // debugging
-        console.log(`Created pipes at x: ${initialPos_X}, topY: ${topY}, bottomY: ${bottomY}`);
+        console.log(`Created pipes at x: ${this.initialPos_X}, topY: ${topY}, bottomY: ${bottomY}`);
 
     }
 
     update(){
         const gameScene = this.scene as Game
         if(gameScene.gameStarted) {
-            this.generatePipes();
-            this.pipes.forEach(([topPipe, bottomPipe]) => {
-                topPipe.setGravity(-CONFIG.GRAVITY);
-                topPipe.x -= CONFIG.BACKGROUND_SPEED;
-                bottomPipe.setGravity(-CONFIG.GRAVITY);
-                bottomPipe.x -= CONFIG.BACKGROUND_SPEED;
+            this.removeOffScreenPipes();
+            if(this.shouldGenerateNewPipe()) {
+                this.generatePipes();
+            }
+            
+            this.pipes.forEach((pipe) => {
+                pipe.setGravity(-CONFIG.GRAVITY);
+                pipe.x -= CONFIG.BACKGROUND_SPEED;
             }) 
         }
         // TODO: collision and score update
