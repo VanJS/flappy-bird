@@ -20,7 +20,15 @@ export class Ground extends BaseObject {
        .setOrigin(0)
        .setScrollFactor(0)
        .setDepth(CONFIG.GROUND_DEPTH);
+
+       this.scene.physics.add.existing(this.ground, true);
     }
+
+    // Add a getter to access the ground sprite
+    getGround(): Phaser.GameObjects.TileSprite | undefined {
+        return this.ground;
+    }
+    
     update(): void {
         if(!this.ground) {
             return;
