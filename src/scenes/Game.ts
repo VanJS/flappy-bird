@@ -120,16 +120,6 @@ export class Game extends Scene
             new Thunder(this)
         );
 
-        // After creating all game objects
-        this.gameObjects.push(
-            new Background(this), 
-            new Ground(this), 
-            new Bird(this), 
-            new Pipes(this), 
-            new Cloud(this),
-            new Thunder(this)
-        );
-        
         // Get references to the bird and ground
         const bird = (this.gameObjects[2] as Bird).getBird();
         const ground = (this.gameObjects[1] as Ground).getGround();
@@ -149,7 +139,11 @@ export class Game extends Scene
         }
 
         // call update of each object
-        this.gameObjects.forEach((object) => object.update());
+        // Only update game objects if the game is not over
+        if (!this.isGameOver) {
+            // call update of each object
+            this.gameObjects.forEach((object) => object.update());
+        }
     }
     
     updateScore() {
@@ -236,6 +230,23 @@ export class Game extends Scene
             if (bird) {
                 bird.setVelocity(0, 0);
             }
+            if (bird) {
+                // Completely stop the bird's movement
+                bird.setVelocity(0, 0);
+                
+                // Disable physics to ensure it doesn't move
+                if (bird.body) {
+                    bird.body.enable = false;
+                    bird.body.moves = false;  // This prevents any physics movement
+                }
+                
+                // Make sure no animations are playing
+                bird.anims.stop();
+            }
+
+            this.physics.pause();
+
+            this.time.paused = true;
             
             // Display game over text or perform other end-game actions
             this.add.text(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2, 'Game Over', {
