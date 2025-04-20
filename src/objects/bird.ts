@@ -1,4 +1,3 @@
-
 import { Game } from '../scenes/Game.ts'
 import { BaseObject } from '../utils/interfaces/object-abstract-class.ts';
 import * as CONFIG from '../utils/configuration.ts'
@@ -29,10 +28,12 @@ export class Bird extends BaseObject {
         .play('bird_sprite');
 
         // Add cursor keys
-        this.cursors = this.scene.input.keyboard.createCursorKeys();
-        
-        // Add space key for jumping
-        this.jumpKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        if (this.scene.input.keyboard) {
+            this.cursors = this.scene.input.keyboard.createCursorKeys();
+            
+            // Add space key for jumping
+            this.jumpKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        }
         
         // Add touch/click input for mobile
         this.scene.input.on('pointerdown', this.jump, this);
@@ -68,19 +69,21 @@ export class Bird extends BaseObject {
             this.bird.y += this.idleDirection;
         } else if (!gameScene.gameOver && !gameScene.isGamePaused) {
             // Apply gravity manually or let physics handle it
-            this.bird.setVelocityY(this.bird.body.velocity.y + CONFIG.GRAVITY);
+            if (this.bird.body) {
+                this.bird.setVelocityY(this.bird.body.velocity.y + CONFIG.GRAVITY);
+            }
             
             // Check for jump input
-            if (Phaser.Input.Keyboard.JustDown(this.jumpKey!) || 
+            if (this.jumpKey && Phaser.Input.Keyboard.JustDown(this.jumpKey) || 
                 (this.cursors && Phaser.Input.Keyboard.JustDown(this.cursors.up))) {
                 this.jump();
             }
             
             // Rotate bird based on velocity
-            if (this.bird.body.velocity.y > 0) {
+            if (this.bird.body && this.bird.body.velocity.y > 0) {
                 // Point downward when falling
                 this.bird.setAngle(Math.min(this.bird.angle + 2, 30));
-            } else {
+            } else if (this.bird.body) {
                 // Point upward when rising
                 this.bird.setAngle(Math.max(this.bird.angle - 4, -30));
             }
