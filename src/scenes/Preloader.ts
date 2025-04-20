@@ -52,6 +52,9 @@ export class Preloader extends Scene {
             'truetype'
         );
 
+        // load background music
+        this.load.audio('background-music', 'assets/audio/background-music.ogg');
+
         
     }
 
