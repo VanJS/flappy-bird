@@ -28,12 +28,10 @@ export class Bird extends BaseObject {
         .play('bird_sprite');
 
         // Add cursor keys
-        if (this.scene.input.keyboard) {
-            this.cursors = this.scene.input.keyboard.createCursorKeys();
-            
-            // Add space key for jumping
-            this.jumpKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        }
+        this.cursors = this.scene.input.keyboard?.createCursorKeys();
+        
+        // Add space key for jumping
+        this.jumpKey = this.scene.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         
         // Add touch/click input for mobile
         this.scene.input.on('pointerdown', this.jump, this);
@@ -54,6 +52,23 @@ export class Bird extends BaseObject {
         }
     }
 
+    handleCollision(): void {
+        if (!this.bird) {
+            return;
+        }
+        
+        // Completely stop the bird's movement
+        this.bird.setVelocity(0, 0);
+        
+        // Disable physics to ensure it doesn't move
+        if (this.bird.body) {
+            this.bird.body.enable = false;
+        }
+        
+        // Stop any animations that might be playing
+        this.bird.anims.stop();
+    }
+
     update() {
         if (!this.bird) {
             return;
@@ -69,13 +84,14 @@ export class Bird extends BaseObject {
             this.bird.y += this.idleDirection;
         } else if (!gameScene.gameOver && !gameScene.isGamePaused) {
             // Apply gravity manually or let physics handle it
-            if (this.bird.body) {
-                this.bird.setVelocityY(this.bird.body.velocity.y + CONFIG.GRAVITY);
+            const velocityY = this.bird.body?.velocity.y;
+            if (velocityY !== undefined) {
+                this.bird.setVelocityY(velocityY + CONFIG.GRAVITY);
             }
             
             // Check for jump input
-            if (this.jumpKey && Phaser.Input.Keyboard.JustDown(this.jumpKey) || 
-                (this.cursors && Phaser.Input.Keyboard.JustDown(this.cursors.up))) {
+            if ((this.jumpKey && Phaser.Input.Keyboard.JustDown(this.jumpKey)) || 
+                (this.cursors?.up && Phaser.Input.Keyboard.JustDown(this.cursors.up))) {
                 this.jump();
             }
             

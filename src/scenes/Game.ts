@@ -44,7 +44,10 @@ export class Game extends Scene
     {
         // Reset game state variables when scene starts or restarts
         this.isGamePaused = false;
+        this.isGameStarted = false;
+        this.isGameOver = false; 
         this.score = 0;
+        this.gameObjects = [];
         
     }
 
@@ -116,6 +119,15 @@ export class Game extends Scene
             new Cloud(this),
             new Thunder(this)
         );
+
+        // Get references to the bird and ground
+        const bird = (this.gameObjects[2] as Bird).getBird();
+        const ground = (this.gameObjects[1] as Ground).getGround();
+        
+        // Add collision detection
+        if (bird && ground) {
+            this.physics.add.collider(bird, ground, this.handleGroundCollision, undefined, this);
+        }
     }
     
     update() {
@@ -127,7 +139,11 @@ export class Game extends Scene
         }
 
         // call update of each object
-        this.gameObjects.forEach((object) => object.update());
+        // Only update game objects if the game is not over
+        if (!this.isGameOver) {
+            // call update of each object
+            this.gameObjects.forEach((object) => object.update());
+        }
     }
     
     updateScore() {
@@ -204,4 +220,48 @@ export class Game extends Scene
         this.scene.stop();
         this.scene.start('MainMenu');
     }
+
+    handleGroundCollision() {
+        if (!this.isGameOver) {
+            this.isGameOver = true;
+
+            // Find the Bird object using instanceof
+            const birdObject = this.gameObjects.find(obj => obj instanceof Bird) as Bird | undefined;
+            if (birdObject) {
+                // Let the bird handle its own collision response
+                birdObject.handleCollision();
+            }
+            
+            // Pause the entire physics system
+            this.physics.pause();
+            
+            // Stop all game timers
+            this.time.paused = true;
+            
+            // Display game over text
+            this.add.text(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2, 'Game Over', {
+                fontFamily: 'PixelGame',
+                fontSize: 32,
+                color: '#ffffff',
+                stroke: '#000000',
+                strokeThickness: 6
+            }).setOrigin(0.5).setScrollFactor(0).setDepth(200);
+            
+            // Add restart button
+            const restartButton = this.add.text(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2 + 50, 'Restart', {
+                fontFamily: 'PixelGame',
+                fontSize: 24,
+                color: '#ffffff',
+                stroke: '#000000',
+                strokeThickness: 4
+            }).setOrigin(0.5).setScrollFactor(0).setDepth(200)
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.scene.restart();
+            });
+        
+        }
+    }
+
+    
 }
