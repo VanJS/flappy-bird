@@ -139,8 +139,8 @@ export class Game extends Scene
         }
 
         // call update of each object
-        // Only update game objects if the game is not over
-        if (!this.isGameOver) {
+        // Only update game objects if the game is not over and not paused
+        if (!this.isGameOver && !this.isGamePaused) {
             // call update of each object
             this.gameObjects.forEach((object) => object.update());
         }
@@ -201,8 +201,14 @@ export class Game extends Scene
         this.isGamePaused = !this.isGamePaused;
         
         if (this.isGamePaused) {
+            // Pause physics and timers
+            this.physics.pause();
+            this.time.paused = true;
             this.showPopup();
         } else {
+            // Resume physics and timers
+            this.physics.resume();
+            this.time.paused = false;
             this.hidePopup();
         }
     }
