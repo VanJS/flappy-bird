@@ -7,6 +7,7 @@ import { Bird } from '../objects/bird';
 import { Pipes } from '../objects/obstacles/pipes';
 import { Cloud } from '../objects/obstacles/cloud';
 import { Thunder } from '../objects/obstacles/thunder';
+import { Score } from '../objects/score.ts';
 
 export class Game extends Scene
 {
@@ -84,12 +85,6 @@ export class Game extends Scene
         this.duck.setVelocityX(200);
         this.duck.setVisible(false);
         
-        // Score text
-        this.scoreText = this.add.text(450, 50, 'Score: 0', {
-            fontFamily: 'PixelGame',
-            fontSize: 18,
-            color: '#ffffff'
-        }).setScrollFactor(0).setDepth(100);
         
         // Add pause button - fixed to UI
         this.pauseButton = this.add.image(60, 50, 'play-icon')
@@ -102,20 +97,16 @@ export class Game extends Scene
         // Create popup (initially hidden)
         this.createPopup();
         
-        // Update score every second
-        this.time.addEvent({
-            delay: 1000,
-            callback: this.updateScore,
-            callbackScope: this,
-            loop: true
-        });
+
+        // add score component
+        const score = new Score(this);
 
         // create objects to the screen
         this.gameObjects.push(
             new Background(this), 
             new Ground(this), 
             new Bird(this), 
-            new Pipes(this), 
+            new Pipes(this, () => score.addPoint()), 
             new Cloud(this),
             new Thunder(this)
         );
@@ -142,16 +133,10 @@ export class Game extends Scene
         // Only update game objects if the game is not over
         if (!this.isGameOver) {
             // call update of each object
-            this.gameObjects.forEach((object) => object.update());
+            this.gameObjects.forEach((object) => object.update(this.time.now));
         }
     }
     
-    updateScore() {
-        if (!this.isGamePaused) {
-            this.score += 10;
-            this.scoreText.setText('Score: ' + this.score);
-        }
-    }
 
     createPopup() {
         // Create a container for the popup (initially hidden)

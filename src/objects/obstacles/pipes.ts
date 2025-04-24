@@ -7,15 +7,35 @@ export class Pipes extends BaseObject {
 
     private pipes: Phaser.Physics.Arcade.Sprite[] = [];
     private initialPos_X: number;
+
+    private gameStartTime: number = 0;
+    private difficultyInterval: number = CONFIG.DIFFICULTY_INTERVAL; 
+    private difficultyLevel: number;
+    private pipeGapY: number;
+    private pipeGapX: number;
+
+    private pointEarned: () => void;
+    private passed: boolean;
+    private birdX: number;
     
     
-    constructor(scene: Phaser.Scene) {
+    constructor(scene: Phaser.Scene, addPoint: () => void) {
         super(scene);
         this.init();
+        this.pointEarned = addPoint;
     }
 
     init() {
         this.initialPos_X = this.scene.cameras.main.width + CONFIG.PIPE_OFFSET_X;
+        this.difficultyLevel = 1;
+        this.pipeGapY = CONFIG.PIPE_GAP_Y_Level_1;
+        this.pipeGapX = CONFIG.PIPE_GAP_X_Level_1;
+        this.passed = false;
+        this.birdX = this.scene.cameras.main.width / 2 - CONFIG.BIRD_OFFSET_X;
+    }
+
+    private resetGameTime(currentTime: number) {
+        this.gameStartTime = currentTime;
     }
 
     private createPipe (x: number, y: number, rotation: number ): Phaser.Physics.Arcade.Sprite {
@@ -58,7 +78,7 @@ export class Pipes extends BaseObject {
     private shouldGenerateNewPipe() {
         if (this.pipes.length === 0) return true;
         const lastTopPipe = this.pipes[this.pipes.length - 1]
-        return this.initialPos_X - lastTopPipe.x >=  CONFIG.PIPE_GAP_X;
+        return this.initialPos_X - lastTopPipe.x >=  this.pipeGapX;
     }
 
     /**
@@ -78,7 +98,7 @@ export class Pipes extends BaseObject {
         const topPipe = this.createPipe(this.initialPos_X, 0, Math.PI);
 
         //calculate Y position of top pipe to keep the gap
-        const topY = bottomY - bottomPipe.displayHeight / 2 - CONFIG.PIPE_GAP_Y;
+        const topY = bottomY - bottomPipe.displayHeight / 2 - this.pipeGapY;
         topPipe.setY(topY);
 
         // push to the lists
@@ -89,20 +109,61 @@ export class Pipes extends BaseObject {
 
     }
 
-    update(){
+    /**
+     * Update difficulty level based on elapsed time.
+     * @param currentTime Current game time in ms
+     */
+    private updateDifficulty(currentTime: number) {
+        const elapsedTime = currentTime - this.gameStartTime;
+        if(elapsedTime >= 2 * this.difficultyInterval){
+            this.difficultyLevel = 3;
+            this.pipeGapX = CONFIG.PIPE_GAP_X_Level_3;
+            this.pipeGapY = CONFIG.PIPE_GAP_Y_Level_3;
+            console.log(`Difficulty increased to level 3. Vertical gap reduced to ${this.pipeGapY}`);
+        } else if(elapsedTime >= this.difficultyInterval) {
+            this.difficultyLevel = 2;
+            this.pipeGapX = CONFIG.PIPE_GAP_X_Level_2;
+            this.pipeGapY = CONFIG.PIPE_GAP_Y_Level_2;
+            console.log(`Difficulty increased to level 2. Horizontal gap reduced to ${this.pipeGapX}`);
+        }
+
+    }
+
+    private passingPipe() {
+        return !! this.pipes.find((pipe) => {
+           return this.birdX > pipe.x - pipe.displayWidth / 2 
+                && this.birdX < pipe.x + pipe.displayWidth / 2;
+        })
+    }
+
+    update(time: number){
+        const currentTime = time ?? this.scene.time.now;
         const gameScene = this.scene as Game
         if(gameScene.gameStarted) {
+            
+            if(this.gameStartTime == 0 && currentTime){
+                this.resetGameTime(currentTime);
+            }
+
+            this.updateDifficulty(currentTime);
+
             this.removeOffScreenPipes();
+
             if(this.shouldGenerateNewPipe()) {
                 this.generatePipes();
             }
-            
+        
             this.pipes.forEach((pipe) => {
                 pipe.setGravity(-CONFIG.GRAVITY);
                 pipe.x -= CONFIG.BACKGROUND_SPEED;
             }) 
+
+            const isPassing = this.passingPipe();
+            if(this.passed && !isPassing) {
+                this.pointEarned();
+            }
+            this.passed = isPassing;
         }
-        // TODO: collision and score update
 
     }
 }

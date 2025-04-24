@@ -8,5 +8,5 @@ export abstract class BaseObject {
 
   abstract init(): void;
 
-  abstract update(): void;
+  abstract update(time: number): void;
 }
