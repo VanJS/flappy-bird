@@ -23,7 +23,7 @@ export class Bird extends BaseObject {
             this.x, 
             this.y, 
             'bird_sprite')
-        .setScale(1.5)
+        .setScale(0.2)
         .setDepth(CONFIG.BIRD_DEPTH)
         .play('bird_sprite');
 

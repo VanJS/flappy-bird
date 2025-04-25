@@ -26,6 +26,7 @@ export class Pipes extends BaseObject {
         )
             .setDepth(CONFIG.PIPE_DEPTH)
             .setRotation(rotation);
+        pipe.setScale(0.2);
         pipe.setVisible(true);
         return pipe;
     }
