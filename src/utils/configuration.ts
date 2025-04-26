@@ -11,13 +11,13 @@ export const IDLE_OFFEST_Y = 20;
 
 export const PIPE_DEPTH = 1;
 export const PIPE_OFFSET_X = 500;
-export const PIPE_GAP_X_Level_1 = 700;
-export const PIPE_GAP_Y_Level_1 = 350;
-export const PIPE_GAP_X_Level_2 = 350;
-export const PIPE_GAP_Y_Level_2 = 350;
-export const PIPE_GAP_X_Level_3 = 250;
-export const PIPE_GAP_Y_Level_3 = 300;
-export const DIFFICULTY_INTERVAL = 30000;
+export const PIPE_GAP_X_BASE = 700;
+export const PIPE_GAP_Y_BASE = 350;
+export const GAP_X_REDUCTION = 250;
+export const GAP_Y_REDUCTION = 40;
+export const DIFFICULTY_INTERVAL = 20000;
+export const DIFFICULTY_LEVEL_MAX = 3;
+
 
 export const JUMP_STRENGTH = 350;
 export const GRAVITY = 20;

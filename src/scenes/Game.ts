@@ -18,6 +18,14 @@ export class Game extends Scene
 
     private gameObjects: BaseObject[] = [];
 
+    // difficulty level management
+    private difficultyLevel: number = 1;
+    private gameStartTime: number = 0;
+    private targetLevelTime: number = 0;
+    private difficultyInterval: number = CONFIG.DIFFICULTY_INTERVAL;
+
+    private score: Score;
+
     background: Phaser.GameObjects.TileSprite;
     duck: Phaser.Physics.Arcade.Sprite;
     pauseButton: Phaser.GameObjects.Image;
@@ -25,7 +33,7 @@ export class Game extends Scene
     scoreText: Phaser.GameObjects.Text;
     uiCamera: Phaser.Cameras.Scene2D.Camera;
     isGamePaused: boolean = false;
-    score: number = 0;
+    
     
     constructor ()
     {
@@ -41,15 +49,26 @@ export class Game extends Scene
         return this.isGameOver;
     }
 
+    getDifficultyLevel(): number {
+        return this.difficultyLevel;
+    }
+    
+        
+    setLevel(level: number) {
+        this.difficultyLevel = level;
+        console.log(`Difficulty increased to level ${level}`);
+    }
+
     init()
     {
         // Reset game state variables when scene starts or restarts
         this.isGamePaused = false;
         this.isGameStarted = false;
         this.isGameOver = false; 
-        this.score = 0;
         this.gameObjects = [];
-        
+        this.difficultyLevel = 1;
+        this.gameStartTime= 0;
+        this.targetLevelTime = 0;
     }
 
     startGame() {
@@ -57,8 +76,9 @@ export class Game extends Scene
         
         // Apply gravity to the world
         this.physics.world.gravity.y = CONFIG.GRAVITY;
+        this.gameStartTime = this.time.now;
+        this.targetLevelTime = this.gameStartTime + this.difficultyInterval;
         
-
     }
 
     create ()
@@ -99,14 +119,15 @@ export class Game extends Scene
         
 
         // add score component
-        const score = new Score(this);
+        this.score = new Score(this); 
+        this.events.on('pipePassed', this.onPipePassed);
 
         // create objects to the screen
         this.gameObjects.push(
             new Background(this), 
             new Ground(this), 
             new Bird(this), 
-            new Pipes(this, () => score.addPoint()), 
+            new Pipes(this),
             new Cloud(this),
             new Thunder(this)
         );
@@ -122,6 +143,10 @@ export class Game extends Scene
     }
     
     update() {
+        if (this.isGamePaused) {
+            return;
+        }
+        const currentTime = this.time.now;
         // Only move the duck when the game is not paused
         if (!this.isGamePaused) {
             this.duck.setVelocityX(200);
@@ -131,12 +156,33 @@ export class Game extends Scene
 
         // call update of each object
         // Only update game objects if the game is not over
-        if (!this.isGameOver) {
-            // call update of each object
-            this.gameObjects.forEach((object) => object.update(this.time.now));
+        if (!this.isGameOver && !this.isGamePaused) {
+            // Update difficulty if game has started
+            if (this.isGameStarted && this.gameStartTime > 0) {
+                this.updateDifficulty(currentTime);
+            }
+            
+            // Update all game objects
+            this.gameObjects.forEach((object) => object.update());
         }
     }
-    
+
+    /**
+     * Update difficulty level based on current time
+     * @param currentTime Current game time in ms
+     */
+    private updateDifficulty(currentTime: number) {
+        if (currentTime > this.targetLevelTime 
+            && this.difficultyLevel < CONFIG.DIFFICULTY_LEVEL_MAX) {
+            this.difficultyLevel++;
+            this.targetLevelTime = currentTime + this.difficultyInterval;
+            console.log(`Difficulty increased to level ${this.difficultyLevel}`);
+        }
+    }
+
+    private onPipePassed = () => {
+        this.score.addPoint();
+    };
 
     createPopup() {
         // Create a container for the popup (initially hidden)
@@ -187,8 +233,14 @@ export class Game extends Scene
         
         if (this.isGamePaused) {
             this.showPopup();
+            this.events.off('pipePassed', this.onPipePassed);
+            this.physics.pause();
+            this.time.paused = true;
         } else {
             this.hidePopup();
+            this.events.on('pipePassed', this.onPipePassed);
+            this.physics.resume();
+            this.time.paused = false;
         }
     }
     
@@ -201,7 +253,6 @@ export class Game extends Scene
     }
     
     returnToMainMenu() {
-        // Stop all timers and clean up the scene
         this.scene.stop();
         this.scene.start('MainMenu');
     }
@@ -209,6 +260,9 @@ export class Game extends Scene
     handleGroundCollision() {
         if (!this.isGameOver) {
             this.isGameOver = true;
+
+
+            this.events.off('pipePassed', this.onPipePassed);
 
             // Find the Bird object using instanceof
             const birdObject = this.gameObjects.find(obj => obj instanceof Bird) as Bird | undefined;
@@ -243,7 +297,7 @@ export class Game extends Scene
             .setInteractive()
             .on('pointerdown', () => {
                 this.scene.restart();
-            });
+            }); 
         
         }
     }
