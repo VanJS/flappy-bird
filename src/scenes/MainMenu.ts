@@ -14,7 +14,14 @@ export class MainMenu extends Scene
 
     create ()
     {
+        // Play background music
+        const bgMusic = this.sound.get('background-music');
+        if (!bgMusic || !bgMusic.isPlaying) {
+            this.sound.play('background-music', { loop: true, volume: 0.5 });
+        }
+
         this.background = this.add.image(512, 384, 'menu-bg');
+
 
         this.logo = this.add.image(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2 - 40, 'logo').setScale(0.3);
 
