@@ -3,19 +3,34 @@ import * as CONFIG from '../../utils/configuration.ts'
 import { Game } from "../../scenes/Game.ts";
 import { generateRandom } from "../../utils/generateRandom.ts";
 
+
 export class Pipes extends BaseObject {
 
     private pipes: Phaser.Physics.Arcade.Sprite[] = [];
     private initialPos_X: number;
+
+    private pipeGapY: number;
+    private pipeGapX: number;
+
+    private passed: boolean;
+    private birdX: number; // x position of bird
     
     
     constructor(scene: Phaser.Scene) {
-        super(scene);
+        super(scene)
         this.init();
+    }
+    
+    getPipes(): Phaser.Physics.Arcade.Sprite[] {
+        return this.pipes;
     }
 
     init() {
         this.initialPos_X = this.scene.cameras.main.width + CONFIG.PIPE_OFFSET_X;
+        this.pipeGapY = CONFIG.PIPE_GAP_Y_BASE;
+        this.pipeGapX = CONFIG.PIPE_GAP_X_BASE;
+        this.passed = false;
+        this.birdX = this.scene.cameras.main.width / 2 - CONFIG.BIRD_OFFSET_X;
     }
 
     private createPipe (x: number, y: number, rotation: number ): Phaser.Physics.Arcade.Sprite {
@@ -59,7 +74,7 @@ export class Pipes extends BaseObject {
     private shouldGenerateNewPipe() {
         if (this.pipes.length === 0) return true;
         const lastTopPipe = this.pipes[this.pipes.length - 1]
-        return this.initialPos_X - lastTopPipe.x >=  CONFIG.PIPE_GAP_X;
+        return this.initialPos_X - lastTopPipe.x >=  this.pipeGapX;
     }
 
     /**
@@ -79,7 +94,7 @@ export class Pipes extends BaseObject {
         const topPipe = this.createPipe(this.initialPos_X, 0, Math.PI);
 
         //calculate Y position of top pipe to keep the gap
-        const topY = bottomY - bottomPipe.displayHeight / 2 - CONFIG.PIPE_GAP_Y;
+        const topY = bottomY - bottomPipe.displayHeight / 2 - this.pipeGapY;
         topPipe.setY(topY);
 
         // push to the lists
@@ -90,20 +105,43 @@ export class Pipes extends BaseObject {
 
     }
 
+    private passingPipe() {
+        return !! this.pipes.find((pipe) => {
+           return this.birdX > pipe.x - pipe.displayWidth / 2 
+                && this.birdX < pipe.x + pipe.displayWidth / 2;
+        })
+    }
+
+    private gainPoints() {
+        const isPassing = this.passingPipe();
+        if(this.passed && !isPassing) {
+            this.scene.events.emit('pipePassed');
+        }
+        this.passed = isPassing;
+    }
+
     update(){
         const gameScene = this.scene as Game
-        if(gameScene.gameStarted) {
+        if(!gameScene.isGamePaused && gameScene.gameStarted) {
+            
+            // update game difficulty
+            const level = gameScene.getDifficultyLevel();
+            this.pipeGapX = CONFIG.PIPE_GAP_X_BASE - (level -1) * CONFIG.GAP_X_REDUCTION;
+            this.pipeGapY = CONFIG.PIPE_GAP_Y_BASE - (level -1) * CONFIG.GAP_Y_REDUCTION;
+
             this.removeOffScreenPipes();
+
             if(this.shouldGenerateNewPipe()) {
                 this.generatePipes();
             }
-            
+        
             this.pipes.forEach((pipe) => {
                 pipe.setGravity(-CONFIG.GRAVITY);
                 pipe.x -= CONFIG.BACKGROUND_SPEED;
             }) 
+
+            this.gainPoints();
         }
-        // TODO: collision and score update
 
     }
 }
