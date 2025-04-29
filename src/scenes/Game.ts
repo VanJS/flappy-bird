@@ -34,6 +34,7 @@ export class Game extends Scene
     uiCamera: Phaser.Cameras.Scene2D.Camera;
     isGamePaused: boolean = false;
     
+    private pipesGroup: Phaser.Physics.Arcade.Group;
     
     constructor ()
     {
@@ -122,12 +123,18 @@ export class Game extends Scene
         this.score = new Score(this); 
         this.events.on('pipePassed', this.onPipePassed);
 
-        // create objects to the screen
+        // Create a physics group for the pipes
+        this.pipesGroup = this.physics.add.group();
+        // Set default physics properties for objects added to this group
+        this.pipesGroup.defaults.setAllowGravity = false;
+        this.pipesGroup.defaults.setImmovable = true;
+
+        // create objects to the screen, passing the group to Pipes
         this.gameObjects.push(
             new Background(this), 
             new Ground(this), 
             new Bird(this), 
-            new Pipes(this, 50),
+            new Pipes(this, this.pipesGroup, 50),
             new Cloud(this),
             new Thunder(this)
         );
@@ -135,16 +142,14 @@ export class Game extends Scene
         // Get references to GameObjects
         const bird = (this.gameObjects[2] as Bird).getBird();
         const ground = (this.gameObjects[1] as Ground).getGround();
-        const pipesObject = this.gameObjects[3] as Pipes;
-        const pipesGroup = pipesObject.getPipes();
         
         // Add collision detection
         if (bird && ground) {
             this.physics.add.collider(bird, ground, this.handleBirdCollision, undefined, this);
         }
-        // Add collision detection between bird and pipes
-        if (bird && pipesGroup) {
-            this.physics.add.collider(bird, pipesGroup, this.handleBirdCollision, undefined, this);
+        // Add collision detection between bird and the pipes group
+        if (bird && this.pipesGroup) {
+            this.physics.add.collider(bird, this.pipesGroup, this.handleBirdCollision, undefined, this);
         }
     }
     
