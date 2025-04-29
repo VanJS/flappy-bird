@@ -55,6 +55,9 @@ export class Preloader extends Scene {
         // load background music
         this.load.audio('background-music', 'assets/audio/background-music.ogg');
 
+        // Load collision sound
+        this.load.audio('hit_sound', 'assets/audio/hit.mp3');
+
         
     }
 
