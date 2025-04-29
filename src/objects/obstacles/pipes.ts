@@ -7,17 +7,19 @@ import { generateRandom } from "../../utils/generateRandom.ts";
 export class Pipes extends BaseObject {
 
     private pipes: Phaser.Physics.Arcade.Sprite[] = [];
+    private offset_X: number;
     private initialPos_X: number;
 
-    private pipeGapY: number;
-    private pipeGapX: number;
+    private pipeGap_Y: number;
+    private pipeGap_X: number;
 
     private passed: boolean;
     private birdX: number; // x position of bird
     
     
-    constructor(scene: Phaser.Scene) {
+    constructor(scene: Phaser.Scene, offset: number = CONFIG.PIPE_OFFSET_X) {
         super(scene)
+        this.offset_X = offset
         this.init();
     }
     
@@ -26,9 +28,9 @@ export class Pipes extends BaseObject {
     }
 
     init() {
-        this.initialPos_X = this.scene.cameras.main.width + CONFIG.PIPE_OFFSET_X;
-        this.pipeGapY = CONFIG.PIPE_GAP_Y_BASE;
-        this.pipeGapX = CONFIG.PIPE_GAP_X_BASE;
+        this.initialPos_X = this.scene.cameras.main.width + this.offset_X;
+        this.pipeGap_Y = CONFIG.PIPE_GAP_Y_BASE;
+        this.pipeGap_X = CONFIG.PIPE_GAP_X_BASE;
         this.passed = false;
         this.birdX = this.scene.cameras.main.width / 2 - CONFIG.BIRD_OFFSET_X;
     }
@@ -72,8 +74,8 @@ export class Pipes extends BaseObject {
      */
     private shouldGenerateNewPipe() {
         if (this.pipes.length === 0) return true;
-        const lastTopPipe = this.pipes[this.pipes.length - 1]
-        return this.initialPos_X - lastTopPipe.x >=  this.pipeGapX;
+        const lastTopPipe = this.pipes[this.pipes.length - 2]
+        return this.initialPos_X - lastTopPipe.x >=  this.pipeGap_X;
     }
 
     /**
@@ -93,11 +95,12 @@ export class Pipes extends BaseObject {
         const topPipe = this.createPipe(this.initialPos_X, 0, Math.PI);
 
         //calculate Y position of top pipe to keep the gap
-        const topY = bottomY - bottomPipe.displayHeight / 2 - this.pipeGapY;
+        const topY = bottomY - bottomPipe.displayHeight / 2 - this.pipeGap_Y;
         topPipe.setY(topY);
 
-        // push to the lists
+        // add pipe pair to the list
         this.pipes.push(topPipe, bottomPipe);
+        this.scene.events.emit('newPipe', topPipe, bottomPipe);
 
         // debugging
         console.log(`Created pipes at x: ${this.initialPos_X}, topY: ${topY}, bottomY: ${bottomY}`);
@@ -125,8 +128,8 @@ export class Pipes extends BaseObject {
             
             // update game difficulty
             const level = gameScene.getDifficultyLevel();
-            this.pipeGapX = CONFIG.PIPE_GAP_X_BASE - (level -1) * CONFIG.GAP_X_REDUCTION;
-            this.pipeGapY = CONFIG.PIPE_GAP_Y_BASE - (level -1) * CONFIG.GAP_Y_REDUCTION;
+            this.pipeGap_X = CONFIG.PIPE_GAP_X_BASE - (level -1) * CONFIG.GAP_X_REDUCTION;
+            this.pipeGap_Y = CONFIG.PIPE_GAP_Y_BASE - (level -1) * CONFIG.GAP_Y_REDUCTION;
 
             this.removeOffScreenPipes();
 
@@ -135,8 +138,8 @@ export class Pipes extends BaseObject {
             }
         
             this.pipes.forEach((pipe) => {
-                pipe.setGravity(-CONFIG.GRAVITY);
-                pipe.x -= CONFIG.BACKGROUND_SPEED;
+                pipe.setGravityY(-CONFIG.GRAVITY);
+                pipe.x -= CONFIG.PIPE_SPEED;
             }) 
 
             this.gainPoints();
