@@ -45,6 +45,14 @@ export class Pipes extends BaseObject {
             .setRotation(rotation);
         pipe.setScale(0.2);
         pipe.setVisible(true);
+
+        // Set hitbox and offset
+        pipe.body?.setSize(pipe.width * 0.95, pipe.height * 0.9);
+
+
+        // Make the body static and immovable
+        pipe.body?.setAllowGravity(false);
+        pipe.body?.setImmovable(true);
         return pipe;
     }
 
@@ -139,7 +147,6 @@ export class Pipes extends BaseObject {
             }
         
             this.pipes.forEach((pipe) => {
-                pipe.setGravityY(-CONFIG.GRAVITY);
                 pipe.x -= CONFIG.PIPE_SPEED;
             }) 
 

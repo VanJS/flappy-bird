@@ -132,13 +132,19 @@ export class Game extends Scene
             new Thunder(this)
         );
 
-        // Get references to the bird and ground
+        // Get references to GameObjects
         const bird = (this.gameObjects[2] as Bird).getBird();
         const ground = (this.gameObjects[1] as Ground).getGround();
+        const pipesObject = this.gameObjects[3] as Pipes;
+        const pipesGroup = pipesObject.getPipes();
         
         // Add collision detection
         if (bird && ground) {
             this.physics.add.collider(bird, ground, this.handleGroundCollision, undefined, this);
+        }
+        // Add collision detection between bird and pipes
+        if (bird && pipesGroup) {
+            this.physics.add.collider(bird, pipesGroup, this.handleGroundCollision, undefined, this);
         }
     }
     
