@@ -10,13 +10,14 @@ export const BIRD_OFFSET_X = 100;
 export const IDLE_OFFEST_Y = 20;
 
 export const PIPE_DEPTH = 1;
-export const PIPE_OFFSET_X = 500;
+export const PIPE_OFFSET_X = 50;
+export const PIPE_SPEED = 2.5;
 export const PIPE_GAP_X_BASE = 700;
 export const PIPE_GAP_Y_BASE = 350;
-export const GAP_X_REDUCTION = 250;
-export const GAP_Y_REDUCTION = 40;
+export const GAP_X_REDUCTION = 150;
+export const GAP_Y_REDUCTION = 25;
 export const DIFFICULTY_INTERVAL = 20000;
-export const DIFFICULTY_LEVEL_MAX = 3;
+export const DIFFICULTY_LEVEL_MAX = 4;
 
 
 export const JUMP_STRENGTH = 350;

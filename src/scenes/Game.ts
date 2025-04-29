@@ -127,7 +127,7 @@ export class Game extends Scene
             new Background(this), 
             new Ground(this), 
             new Bird(this), 
-            new Pipes(this),
+            new Pipes(this, 50),
             new Cloud(this),
             new Thunder(this)
         );
