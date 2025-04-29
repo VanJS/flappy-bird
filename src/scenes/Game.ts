@@ -155,6 +155,7 @@ export class Game extends Scene
         }
 
         // call update of each object
+
         // Only update game objects if the game is not over
         if (!this.isGameOver && !this.isGamePaused) {
             // Update difficulty if game has started
@@ -232,11 +233,17 @@ export class Game extends Scene
         this.isGamePaused = !this.isGamePaused;
         
         if (this.isGamePaused) {
+            // Pause physics and timers
+            this.physics.pause();
+            this.time.paused = true;
             this.showPopup();
             this.events.off('pipePassed', this.onPipePassed);
             this.physics.pause();
             this.time.paused = true;
         } else {
+            // Resume physics and timers
+            this.physics.resume();
+            this.time.paused = false;
             this.hidePopup();
             this.events.on('pipePassed', this.onPipePassed);
             this.physics.resume();
