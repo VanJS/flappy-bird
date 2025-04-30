@@ -40,7 +40,7 @@
           {
             "type": "image",
             "key": "pipe",
-            "url": "pipe-green.png"
+            "url": "building-1.png"
           },
           {
             "type": "image",
@@ -51,7 +51,7 @@
           "type": "spritesheet",
           "key": "bird_sprite",
           "url": "bird-sprite.png",
-          "frameConfig": { "frameWidth": 34, "frameHeight": 24 }
+          "frameConfig": { "frameWidth": 336, "frameHeight": 316 }
         }
       ]
     }

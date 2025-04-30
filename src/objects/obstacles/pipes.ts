@@ -6,7 +6,7 @@ import { generateRandom } from "../../utils/generateRandom.ts";
 
 export class Pipes extends BaseObject {
 
-    private pipes: Phaser.Physics.Arcade.Sprite[] = [];
+    private group: Phaser.Physics.Arcade.Group;
     private offset_X: number;
     private initialPos_X: number;
 
@@ -17,16 +17,13 @@ export class Pipes extends BaseObject {
     private birdX: number; // x position of bird
     
     
-    constructor(scene: Phaser.Scene, offset: number = CONFIG.PIPE_OFFSET_X) {
+    constructor(scene: Phaser.Scene, group: Phaser.Physics.Arcade.Group, offset: number = CONFIG.PIPE_OFFSET_X) {
         super(scene)
+        this.group = group;
         this.offset_X = offset
         this.init();
     }
     
-    getPipes(): Phaser.Physics.Arcade.Sprite[] {
-        return this.pipes;
-    }
-
     init() {
         this.initialPos_X = this.scene.cameras.main.width + this.offset_X;
         this.pipeGap_Y = CONFIG.PIPE_GAP_Y_BASE;
@@ -43,7 +40,16 @@ export class Pipes extends BaseObject {
         )
             .setDepth(CONFIG.PIPE_DEPTH)
             .setRotation(rotation);
+        pipe.setScale(0.2);
         pipe.setVisible(true);
+
+        // Set hitbox and offset
+        pipe.body?.setSize(pipe.width * 0.95, pipe.height * 0.9);
+
+
+        // Make the body static and immovable
+        pipe.body?.setAllowGravity(false);
+        pipe.body?.setImmovable(true);
         return pipe;
     }
 
@@ -51,21 +57,13 @@ export class Pipes extends BaseObject {
      * remove pipes that is off screen
      */
     private removeOffScreenPipes() {
-        if(this.pipes.length) {
-            const visiblePipes: Phaser.Physics.Arcade.Sprite[] = [];
-            this.pipes.forEach((pipe) =>{
-                // still on screen, push to visible array
-                if(pipe && pipe.x + pipe.displayWidth / 2 > 0){
-                    visiblePipes.push(pipe);
-                } else {
-                    // off screen, destroy
-                    pipe.destroy();
-                    //debugging
-                    console.log(`Destroy pipes at x: ${pipe.x}, y: ${pipe.y}`);
-                }
-            })
-            this.pipes = visiblePipes;
-        }
+        this.group.getChildren().forEach((pipe) => {
+            const pipeSprite = pipe as Phaser.Physics.Arcade.Sprite;
+            if (pipeSprite && pipeSprite.x + pipeSprite.displayWidth / 2 < 0) {
+                this.group.remove(pipeSprite, true, true);
+                console.log(`Destroy pipes at x: ${pipeSprite.x}, y: ${pipeSprite.y}`);
+            }
+        });
     }
 
     /**
@@ -73,8 +71,9 @@ export class Pipes extends BaseObject {
      * @returns boolean
      */
     private shouldGenerateNewPipe() {
-        if (this.pipes.length === 0) return true;
-        const lastTopPipe = this.pipes[this.pipes.length - 2]
+        const children = this.group.getChildren();
+        if (children.length === 0) return true;
+        const lastTopPipe = children[children.length - 2] as Phaser.Physics.Arcade.Sprite;
         return this.initialPos_X - lastTopPipe.x >=  this.pipeGap_X;
     }
 
@@ -98,9 +97,9 @@ export class Pipes extends BaseObject {
         const topY = bottomY - bottomPipe.displayHeight / 2 - this.pipeGap_Y;
         topPipe.setY(topY);
 
-        // add pipe pair to the list
-        this.pipes.push(topPipe, bottomPipe);
-        this.scene.events.emit('newPipe', topPipe, bottomPipe);
+        // Add pipe pair to the group instead of the array
+        this.group.add(topPipe);
+        this.group.add(bottomPipe);
 
         // debugging
         console.log(`Created pipes at x: ${this.initialPos_X}, topY: ${topY}, bottomY: ${bottomY}`);
@@ -108,9 +107,10 @@ export class Pipes extends BaseObject {
     }
 
     private passingPipe() {
-        return !! this.pipes.find((pipe) => {
-           return this.birdX > pipe.x - pipe.displayWidth / 2 
-                && this.birdX < pipe.x + pipe.displayWidth / 2;
+        return !! this.group.getChildren().find((pipe) => {
+           const pipeSprite = pipe as Phaser.Physics.Arcade.Sprite; 
+           return this.birdX > pipeSprite.x - pipeSprite.displayWidth / 2 
+                && this.birdX < pipeSprite.x + pipeSprite.displayWidth / 2;
         })
     }
 
@@ -137,9 +137,10 @@ export class Pipes extends BaseObject {
                 this.generatePipes();
             }
         
-            this.pipes.forEach((pipe) => {
-                pipe.setGravityY(-CONFIG.GRAVITY);
-                pipe.x -= CONFIG.PIPE_SPEED;
+            // Iterate over the group's children to update positions
+            this.group.getChildren().forEach((pipe) => {
+                const pipeSprite = pipe as Phaser.Physics.Arcade.Sprite;
+                pipeSprite.x -= CONFIG.PIPE_SPEED;
             }) 
 
             this.gainPoints();

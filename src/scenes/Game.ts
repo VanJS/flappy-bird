@@ -34,6 +34,7 @@ export class Game extends Scene
     uiCamera: Phaser.Cameras.Scene2D.Camera;
     isGamePaused: boolean = false;
     
+    private pipesGroup: Phaser.Physics.Arcade.Group;
     
     constructor ()
     {
@@ -122,23 +123,33 @@ export class Game extends Scene
         this.score = new Score(this); 
         this.events.on('pipePassed', this.onPipePassed);
 
-        // create objects to the screen
+        // Create a physics group for the pipes
+        this.pipesGroup = this.physics.add.group();
+        // Set default physics properties for objects added to this group
+        this.pipesGroup.defaults.setAllowGravity = false;
+        this.pipesGroup.defaults.setImmovable = true;
+
+        // create objects to the screen, passing the group to Pipes
         this.gameObjects.push(
             new Background(this), 
             new Ground(this), 
             new Bird(this), 
-            new Pipes(this, 50),
+            new Pipes(this, this.pipesGroup, 50),
             new Cloud(this),
             new Thunder(this)
         );
 
-        // Get references to the bird and ground
+        // Get references to GameObjects
         const bird = (this.gameObjects[2] as Bird).getBird();
         const ground = (this.gameObjects[1] as Ground).getGround();
         
         // Add collision detection
         if (bird && ground) {
-            this.physics.add.collider(bird, ground, this.handleGroundCollision, undefined, this);
+            this.physics.add.collider(bird, ground, this.handleBirdCollision, undefined, this);
+        }
+        // Add collision detection between bird and the pipes group
+        if (bird && this.pipesGroup) {
+            this.physics.add.collider(bird, this.pipesGroup, this.handleBirdCollision, undefined, this);
         }
     }
     
@@ -264,17 +275,21 @@ export class Game extends Scene
         this.scene.start('MainMenu');
     }
 
-    handleGroundCollision() {
+    handleBirdCollision(bird: any, obstacle: any)
+    {
         if (!this.isGameOver) {
+            if (obstacle instanceof Phaser.Physics.Arcade.Sprite) {
+                this.sound.play('hit_sound');
+            }
+
             this.isGameOver = true;
 
 
             this.events.off('pipePassed', this.onPipePassed);
 
-            // Find the Bird object using instanceof
+
             const birdObject = this.gameObjects.find(obj => obj instanceof Bird) as Bird | undefined;
             if (birdObject) {
-                // Let the bird handle its own collision response
                 birdObject.handleCollision();
             }
             

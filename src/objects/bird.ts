@@ -23,9 +23,12 @@ export class Bird extends BaseObject {
             this.x, 
             this.y, 
             'bird_sprite')
-        .setScale(1.5)
+        .setScale(0.2)
         .setDepth(CONFIG.BIRD_DEPTH)
-        .play('bird_sprite');
+            .play('bird_sprite');
+        
+        // Set hitbox and offset
+        this.bird.body?.setSize(this.bird.width * 0.8, this.bird.height * 0.8);
 
         // Add cursor keys
         this.cursors = this.scene.input.keyboard?.createCursorKeys();
