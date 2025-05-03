@@ -5,6 +5,7 @@ export const BACKGROUND_SPEED = 1;
 export const GROUND_DEPTH = 2;
 export const GROUND_HEIGHT = 36;
 export const GROUND_SPEED = 2;
+
 export const BIRD_DEPTH = 10;
 export const BIRD_OFFSET_X = 100;
 export const IDLE_OFFEST_Y = 20;
@@ -19,6 +20,11 @@ export const GAP_Y_REDUCTION = 25;
 export const DIFFICULTY_INTERVAL = 20000;
 export const DIFFICULTY_LEVEL_MAX = 4;
 
+export const CLOUD_DEPTH = 5;
+export const CLOUD_GAP_X = 125;
+export const CLOUD_OFFSET_X = 100;
+export const CLOUD_OFFSET_Y = 50;
+export const THUNDER_DEPTH = 50;
 
 export const JUMP_STRENGTH = 350;
 export const GRAVITY = 20;

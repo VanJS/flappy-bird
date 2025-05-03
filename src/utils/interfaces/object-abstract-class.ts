@@ -1,5 +1,6 @@
 
 export abstract class BaseObject {
+  [x: string]: any;
   protected scene: Phaser.Scene;
 
   constructor(scene: Phaser.Scene) {

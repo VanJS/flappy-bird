@@ -13,7 +13,9 @@ export class Bird extends BaseObject {
     constructor(scene: Phaser.Scene) {
         super(scene);  
         this.init();
-   
+        if (this.bird?.body instanceof Phaser.Physics.Arcade.Body) {
+            this.bird.body.collideWorldBounds = true;
+        }
     }
 
     init() {
