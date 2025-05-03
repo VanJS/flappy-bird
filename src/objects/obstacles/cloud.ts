@@ -39,7 +39,7 @@ export class Cloud extends BaseObject {
       .create(x, y, "cloud")
       .setDepth(CONFIG.CLOUD_DEPTH);
     cloud.setData("isCollectable", true);
-    const scale = generateRandom(0.8, 1.5);
+    const scale = generateRandom(0.5, 1.2);
     cloud.setScale(scale);
     this.scene.events.emit("cloudCreated", cloud);
     console.log(`Created cloud at x: ${x}, y: ${y}`);

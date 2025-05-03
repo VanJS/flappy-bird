@@ -15,10 +15,6 @@ export class Game extends Scene {
   private isGameOver: boolean = false;
 
   private gameObjects: BaseObject[] = [];
-  private groud: Ground;
-  private bird: Bird;
-  private pipes: Pipes;
-  private clouds: Cloud;
 
   // difficulty level management
   private difficultyLevel: number = 1;

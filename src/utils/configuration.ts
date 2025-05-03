@@ -24,6 +24,7 @@ export const CLOUD_DEPTH = 5;
 export const CLOUD_GAP_X = 125;
 export const CLOUD_OFFSET_X = 100;
 export const CLOUD_OFFSET_Y = 50;
+
 export const THUNDER_DEPTH = 50;
 
 export const JUMP_STRENGTH = 350;
