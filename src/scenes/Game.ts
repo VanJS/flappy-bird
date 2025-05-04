@@ -1,328 +1,384 @@
-import { Scene } from 'phaser';
-import * as CONFIG from '../utils/configuration.ts'
-import { BaseObject } from '../utils/interfaces/object-abstract-class';
-import { Background } from '../objects/background';
-import { Ground } from '../objects/ground';
-import { Bird } from '../objects/bird';
-import { Pipes } from '../objects/obstacles/pipes';
-import { Cloud } from '../objects/obstacles/cloud';
-import { Thunder } from '../objects/obstacles/thunder';
-import { Score } from '../objects/score.ts';
+import { Scene } from "phaser";
+import * as CONFIG from "../utils/configuration.ts";
+import { BaseObject } from "../utils/interfaces/object-abstract-class";
+import { Background } from "../objects/background";
+import { Ground } from "../objects/ground";
+import { Bird } from "../objects/bird";
+import { Pipes } from "../objects/obstacles/pipes";
+import { Cloud } from "../objects/obstacles/cloud";
+import { Thunder } from "../objects/obstacles/thunder";
+import { Score } from "../objects/score.ts";
 
-export class Game extends Scene
-{
+export class Game extends Scene {
+  camera: Phaser.Cameras.Scene2D.Camera;
+  private isGameStarted: boolean = false;
+  private isGameOver: boolean = false;
 
-    camera: Phaser.Cameras.Scene2D.Camera;
-    private isGameStarted: boolean = false;
-    private isGameOver: boolean = false;
+  private gameObjects: BaseObject[] = [];
 
-    private gameObjects: BaseObject[] = [];
+  // difficulty level management
+  private difficultyLevel: number = 1;
+  private gameStartTime: number = 0;
+  private targetLevelTime: number = 0;
+  private difficultyInterval: number = CONFIG.DIFFICULTY_INTERVAL;
 
-    // difficulty level management
-    private difficultyLevel: number = 1;
-    private gameStartTime: number = 0;
-    private targetLevelTime: number = 0;
-    private difficultyInterval: number = CONFIG.DIFFICULTY_INTERVAL;
+  private score: Score;
 
-    private score: Score;
+  background: Phaser.GameObjects.TileSprite;
+  duck: Phaser.Physics.Arcade.Sprite;
+  pauseButton: Phaser.GameObjects.Image;
+  popup: Phaser.GameObjects.Container;
+  scoreText: Phaser.GameObjects.Text;
+  uiCamera: Phaser.Cameras.Scene2D.Camera;
+  isGamePaused: boolean = false;
 
-    background: Phaser.GameObjects.TileSprite;
-    duck: Phaser.Physics.Arcade.Sprite;
-    pauseButton: Phaser.GameObjects.Image;
-    popup: Phaser.GameObjects.Container;
-    scoreText: Phaser.GameObjects.Text;
-    uiCamera: Phaser.Cameras.Scene2D.Camera;
-    isGamePaused: boolean = false;
-    
-    private pipesGroup: Phaser.Physics.Arcade.Group;
-    
-    constructor ()
-    {
-        super('Game');
+  private pipesGroup: Phaser.Physics.Arcade.Group;
+
+  constructor() {
+    super("Game");
+  }
+
+  get gameStarted() {
+    return this.isGameStarted;
+  }
+
+  get gameOver() {
+    return this.isGameOver;
+  }
+
+  getDifficultyLevel(): number {
+    return this.difficultyLevel;
+  }
+
+  setLevel(level: number) {
+    this.difficultyLevel = level;
+    console.log(`Difficulty increased to level ${level}`);
+  }
+
+  init() {
+    // Reset game state variables when scene starts or restarts
+    this.isGamePaused = false;
+    this.isGameStarted = false;
+    this.isGameOver = false;
+    this.gameObjects = [];
+    this.difficultyLevel = 1;
+    this.gameStartTime = 0;
+    this.targetLevelTime = 0;
+  }
+
+  startGame() {
+    this.isGameStarted = true;
+
+    // Apply gravity to the world
+    this.physics.world.gravity.y = CONFIG.GRAVITY;
+    this.gameStartTime = this.time.now;
+    this.targetLevelTime = this.gameStartTime + this.difficultyInterval;
+  }
+
+  create() {
+    // Set up main camera
+    this.camera = this.cameras.main;
+
+    // Set world bounds for the game (extend far to the right)
+    // TODO: Replace with actual bounds
+    this.physics.world.setBounds(0, 0, 10000, CONFIG.GAME_HEIGHT);
+
+    // TODO: Replace with actual background
+    this.background = this.add
+      .tileSprite(0, 0, 10000, CONFIG.GAME_HEIGHT, "background")
+      .setOrigin(0, 0)
+      .setScrollFactor(0.8);
+
+    // TODO: Test only- replace with actual duck spritesheet
+    this.duck = this.physics.add
+      .sprite(200, 384, "duck")
+      .setScale(0.1)
+      .setCollideWorldBounds(true)
+      .setDepth(CONFIG.BIRD_DEPTH);
+
+    // Set the duck to move constantly to the right
+    this.duck.setVelocityX(200);
+    this.duck.setVisible(false);
+
+    // Add pause button - fixed to UI
+    this.pauseButton = this.add
+      .image(60, 50, "play-icon")
+      .setScale(0.05)
+      .setScrollFactor(0)
+      .setDepth(100)
+      .setInteractive()
+      .on("pointerdown", this.togglePause, this);
+
+    // Create popup (initially hidden)
+    this.createPopup();
+
+    // add score component
+    this.score = new Score(this);
+    this.events.on("pipePassed", this.onPipePassed);
+
+    // Create a physics group for the pipes
+    this.pipesGroup = this.physics.add.group();
+    // Set default physics properties for objects added to this group
+    this.pipesGroup.defaults.setAllowGravity = false;
+    this.pipesGroup.defaults.setImmovable = true;
+
+    // create objects to the screen, passing the group to Pipes
+    this.gameObjects.push(
+      new Background(this),
+      new Ground(this),
+      new Bird(this),
+      new Pipes(this, this.pipesGroup, 50),
+      new Cloud(this)
+      //new Thunder(this)
+    );
+
+    // Get references to GameObjects
+    const bird = (
+      this.gameObjects.find((obj) => obj instanceof Bird) as Bird
+    ).getBird();
+    const ground = (
+      this.gameObjects.find((obj) => obj instanceof Ground) as Ground
+    ).getGround();
+    const cloudGroup = (
+      this.gameObjects.find((obj) => obj instanceof Cloud) as Cloud
+    ).getCloudGroup();
+
+    // Add collision detection
+    if (bird && ground) {
+      this.physics.add.collider(
+        bird,
+        ground,
+        this.handleBirdCollision,
+        undefined,
+        this
+      );
+    }
+    // Add collision detection between bird and the pipes group
+    if (bird && this.pipesGroup) {
+      this.physics.add.collider(
+        bird,
+        this.pipesGroup,
+        this.handleBirdCollision,
+        undefined,
+        this
+      );
     }
 
+    // Add collision detection between bird and the cloud group
+    if (bird && cloudGroup) {
+      this.physics.add.overlap(
+        bird,
+        cloudGroup,
+        this.handleCloudCollision,
+        undefined,
+        this
+      );
+    }
+  }
 
-    get gameStarted() {
-        return this.isGameStarted;
+  update() {
+    if (this.isGamePaused) {
+      return;
+    }
+    const currentTime = this.time.now;
+    // Only move the duck when the game is not paused
+    if (!this.isGamePaused) {
+      this.duck.setVelocityX(200);
+    } else {
+      this.duck.setVelocityX(0);
     }
 
-    get gameOver() {
-        return this.isGameOver;
+    // call update of each object
+
+    // Only update game objects if the game is not over
+    if (!this.isGameOver && !this.isGamePaused) {
+      // Update difficulty if game has started
+      if (this.isGameStarted && this.gameStartTime > 0) {
+        this.updateDifficulty(currentTime);
+      }
+
+      // Update all game objects
+      this.gameObjects.forEach((object) => {
+        object.update();
+      });
     }
+  }
 
-    getDifficultyLevel(): number {
-        return this.difficultyLevel;
+  /**
+   * Update difficulty level based on current time
+   * @param currentTime Current game time in ms
+   */
+  private updateDifficulty(currentTime: number) {
+    if (
+      currentTime > this.targetLevelTime &&
+      this.difficultyLevel < CONFIG.DIFFICULTY_LEVEL_MAX
+    ) {
+      this.difficultyLevel++;
+      this.targetLevelTime = currentTime + this.difficultyInterval;
+      console.log(`Difficulty increased to level ${this.difficultyLevel}`);
     }
-    
-        
-    setLevel(level: number) {
-        this.difficultyLevel = level;
-        console.log(`Difficulty increased to level ${level}`);
+  }
+
+  private onPipePassed = () => {
+    this.score.addPoint(10);
+  };
+
+  createPopup() {
+    // Create a container for the popup (initially hidden)
+    this.popup = this.add
+      .container(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2)
+      .setVisible(false)
+      .setScrollFactor(0)
+      .setDepth(200);
+
+    // Add semi-transparent background overlay
+    const overlay = this.add.rectangle(0, 0, 1024, 768, 0x000000, 0.7);
+
+    // Add popup panel background
+    const panel = this.add.rectangle(0, 0, 400, 300, 0x333333, 0.9);
+    panel.setStrokeStyle(2, 0xffffff);
+
+    // Add title
+    const title = this.add
+      .text(0, -100, "Game Paused", {
+        fontFamily: "PixelGame",
+        fontSize: 24,
+        color: "#ffffff",
+      })
+      .setOrigin(0.5);
+
+    // Add continue button
+    const continueButton = this.add
+      .rectangle(0, -20, 300, 60, 0x4a4a4a)
+      .setInteractive()
+      .on("pointerdown", this.togglePause, this);
+
+    const continueText = this.add
+      .text(0, -20, "Continue Playing", {
+        fontFamily: "PixelGame",
+        fontSize: 14,
+        color: "#ffffff",
+      })
+      .setOrigin(0.5);
+
+    // Add return to menu button
+    const menuButton = this.add
+      .rectangle(0, 60, 300, 60, 0x4a4a4a)
+      .setInteractive()
+      .on("pointerdown", this.returnToMainMenu, this);
+
+    const menuText = this.add
+      .text(0, 60, "Return to Main Menu", {
+        fontFamily: "PixelGame",
+        fontSize: 14,
+        color: "#ffffff",
+      })
+      .setOrigin(0.5);
+
+    // Add all elements to the container
+    this.popup.add([
+      overlay,
+      panel,
+      title,
+      continueButton,
+      continueText,
+      menuButton,
+      menuText,
+    ]);
+  }
+
+  togglePause() {
+    this.isGamePaused = !this.isGamePaused;
+
+    if (this.isGamePaused) {
+      // Pause physics and timers
+      this.physics.pause();
+      this.time.paused = true;
+      this.showPopup();
+      this.events.off("pipePassed", this.onPipePassed);
+      this.physics.pause();
+      this.time.paused = true;
+    } else {
+      // Resume physics and timers
+      this.physics.resume();
+      this.time.paused = false;
+      this.hidePopup();
+      this.events.on("pipePassed", this.onPipePassed);
+      this.physics.resume();
+      this.time.paused = false;
     }
+  }
 
-    init()
-    {
-        // Reset game state variables when scene starts or restarts
-        this.isGamePaused = false;
-        this.isGameStarted = false;
-        this.isGameOver = false; 
-        this.gameObjects = [];
-        this.difficultyLevel = 1;
-        this.gameStartTime= 0;
-        this.targetLevelTime = 0;
+  showPopup() {
+    this.popup.setVisible(true);
+  }
+
+  hidePopup() {
+    this.popup.setVisible(false);
+  }
+
+  returnToMainMenu() {
+    this.scene.stop();
+    this.scene.start("MainMenu");
+  }
+
+  handleCloudCollision(bird: any, cloud: any) {
+    cloud.disableBody(true, true);
+    this.score.addPoint(5);
+  }
+
+  handleBirdCollision(bird: any, obstacle: any) {
+    if (!this.isGameOver) {
+      if (obstacle instanceof Phaser.Physics.Arcade.Sprite) {
+        this.sound.play("hit_sound");
+      }
+
+      this.isGameOver = true;
+
+      this.events.off("pipePassed", this.onPipePassed);
+
+      const birdObject = this.gameObjects.find((obj) => obj instanceof Bird) as
+        | Bird
+        | undefined;
+      if (birdObject) {
+        birdObject.handleCollision();
+      }
+
+      // Pause the entire physics system
+      this.physics.pause();
+
+      // Stop all game timers
+      this.time.paused = true;
+
+      // Display game over text
+      this.add
+        .text(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2, "Game Over", {
+          fontFamily: "PixelGame",
+          fontSize: 32,
+          color: "#ffffff",
+          stroke: "#000000",
+          strokeThickness: 6,
+        })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(200);
+
+      // Add restart button
+      const restartButton = this.add
+        .text(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2 + 50, "Restart", {
+          fontFamily: "PixelGame",
+          fontSize: 24,
+          color: "#ffffff",
+          stroke: "#000000",
+          strokeThickness: 4,
+        })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(200)
+        .setInteractive()
+        .on("pointerdown", () => {
+          this.scene.restart();
+        });
     }
-
-    startGame() {
-        this.isGameStarted = true;
-        
-        // Apply gravity to the world
-        this.physics.world.gravity.y = CONFIG.GRAVITY;
-        this.gameStartTime = this.time.now;
-        this.targetLevelTime = this.gameStartTime + this.difficultyInterval;
-        
-    }
-
-    create ()
-    {
-        // Set up main camera
-        this.camera = this.cameras.main;
-        
-        // Set world bounds for the game (extend far to the right)
-        // TODO: Replace with actual bounds
-        this.physics.world.setBounds(0, 0, 10000, CONFIG.GAME_HEIGHT);
-        
-        // TODO: Replace with actual background
-        this.background = this.add.tileSprite(0, 0, 10000, CONFIG.GAME_HEIGHT, 'background')
-            .setOrigin(0, 0)
-            .setScrollFactor(0.8);
-        
-        // TODO: Test only- replace with actual duck spritesheet
-        this.duck = this.physics.add.sprite(200, 384, 'duck')
-            .setScale(0.1)
-            .setCollideWorldBounds(true)
-            .setDepth(CONFIG.BIRD_DEPTH);
-            
-        // Set the duck to move constantly to the right
-        this.duck.setVelocityX(200);
-        this.duck.setVisible(false);
-        
-        
-        // Add pause button - fixed to UI
-        this.pauseButton = this.add.image(60, 50, 'play-icon')
-            .setScale(0.05)
-            .setScrollFactor(0)
-            .setDepth(100)
-            .setInteractive()
-            .on('pointerdown', this.togglePause, this);
-
-        // Create popup (initially hidden)
-        this.createPopup();
-        
-
-        // add score component
-        this.score = new Score(this); 
-        this.events.on('pipePassed', this.onPipePassed);
-
-        // Create a physics group for the pipes
-        this.pipesGroup = this.physics.add.group();
-        // Set default physics properties for objects added to this group
-        this.pipesGroup.defaults.setAllowGravity = false;
-        this.pipesGroup.defaults.setImmovable = true;
-
-        // create objects to the screen, passing the group to Pipes
-        this.gameObjects.push(
-            new Background(this), 
-            new Ground(this), 
-            new Bird(this), 
-            new Pipes(this, this.pipesGroup, 50),
-            new Cloud(this),
-            new Thunder(this)
-        );
-
-        // Get references to GameObjects
-        const bird = (this.gameObjects[2] as Bird).getBird();
-        const ground = (this.gameObjects[1] as Ground).getGround();
-        
-        // Add collision detection
-        if (bird && ground) {
-            this.physics.add.collider(bird, ground, this.handleBirdCollision, undefined, this);
-        }
-        // Add collision detection between bird and the pipes group
-        if (bird && this.pipesGroup) {
-            this.physics.add.collider(bird, this.pipesGroup, this.handleBirdCollision, undefined, this);
-        }
-    }
-    
-    update() {
-        if (this.isGamePaused) {
-            return;
-        }
-        const currentTime = this.time.now;
-        // Only move the duck when the game is not paused
-        if (!this.isGamePaused) {
-            this.duck.setVelocityX(200);
-        } else {
-            this.duck.setVelocityX(0);
-        }
-
-        // call update of each object
-
-        // Only update game objects if the game is not over
-        if (!this.isGameOver && !this.isGamePaused) {
-            // Update difficulty if game has started
-            if (this.isGameStarted && this.gameStartTime > 0) {
-                this.updateDifficulty(currentTime);
-            }
-            
-            // Update all game objects
-            this.gameObjects.forEach((object) => object.update());
-        }
-    }
-
-    /**
-     * Update difficulty level based on current time
-     * @param currentTime Current game time in ms
-     */
-    private updateDifficulty(currentTime: number) {
-        if (currentTime > this.targetLevelTime 
-            && this.difficultyLevel < CONFIG.DIFFICULTY_LEVEL_MAX) {
-            this.difficultyLevel++;
-            this.targetLevelTime = currentTime + this.difficultyInterval;
-            console.log(`Difficulty increased to level ${this.difficultyLevel}`);
-        }
-    }
-
-    private onPipePassed = () => {
-        this.score.addPoint();
-    };
-
-    createPopup() {
-        // Create a container for the popup (initially hidden)
-        this.popup = this.add.container(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2).setVisible(false).setScrollFactor(0).setDepth(200);
-        
-        // Add semi-transparent background overlay
-        const overlay = this.add.rectangle(0, 0, 1024, 768, 0x000000, 0.7);
-        
-        // Add popup panel background
-        const panel = this.add.rectangle(0, 0, 400, 300, 0x333333, 0.9);
-        panel.setStrokeStyle(2, 0xffffff);
-        
-        // Add title
-        const title = this.add.text(0, -100, 'Game Paused', {
-            fontFamily: 'PixelGame',
-            fontSize: 24,
-            color: '#ffffff'
-        }).setOrigin(0.5);
-        
-        // Add continue button
-        const continueButton = this.add.rectangle(0, -20, 300, 60, 0x4a4a4a)
-            .setInteractive()
-            .on('pointerdown', this.togglePause, this);
-        
-        const continueText = this.add.text(0, -20, 'Continue Playing', {
-            fontFamily: 'PixelGame',
-            fontSize: 14,
-            color: '#ffffff'
-        }).setOrigin(0.5);
-        
-        // Add return to menu button
-        const menuButton = this.add.rectangle(0, 60, 300, 60, 0x4a4a4a)
-            .setInteractive()
-            .on('pointerdown', this.returnToMainMenu, this);
-        
-        const menuText = this.add.text(0, 60, 'Return to Main Menu', {
-            fontFamily: 'PixelGame',
-            fontSize: 14,
-            color: '#ffffff'
-        }).setOrigin(0.5);
-        
-        // Add all elements to the container
-        this.popup.add([overlay, panel, title, continueButton, continueText, menuButton, menuText]);
-    }
-    
-    togglePause() {
-        this.isGamePaused = !this.isGamePaused;
-        
-        if (this.isGamePaused) {
-            // Pause physics and timers
-            this.physics.pause();
-            this.time.paused = true;
-            this.showPopup();
-            this.events.off('pipePassed', this.onPipePassed);
-            this.physics.pause();
-            this.time.paused = true;
-        } else {
-            // Resume physics and timers
-            this.physics.resume();
-            this.time.paused = false;
-            this.hidePopup();
-            this.events.on('pipePassed', this.onPipePassed);
-            this.physics.resume();
-            this.time.paused = false;
-        }
-    }
-    
-    showPopup() {
-        this.popup.setVisible(true);
-    }
-    
-    hidePopup() {
-        this.popup.setVisible(false);
-    }
-    
-    returnToMainMenu() {
-        this.scene.stop();
-        this.scene.start('MainMenu');
-    }
-
-    handleBirdCollision(bird: any, obstacle: any)
-    {
-        if (!this.isGameOver) {
-            if (obstacle instanceof Phaser.Physics.Arcade.Sprite) {
-                this.sound.play('hit_sound');
-            }
-
-            this.isGameOver = true;
-
-
-            this.events.off('pipePassed', this.onPipePassed);
-
-
-            const birdObject = this.gameObjects.find(obj => obj instanceof Bird) as Bird | undefined;
-            if (birdObject) {
-                birdObject.handleCollision();
-            }
-            
-            // Pause the entire physics system
-            this.physics.pause();
-            
-            // Stop all game timers
-            this.time.paused = true;
-            
-            // Display game over text
-            this.add.text(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2, 'Game Over', {
-                fontFamily: 'PixelGame',
-                fontSize: 32,
-                color: '#ffffff',
-                stroke: '#000000',
-                strokeThickness: 6
-            }).setOrigin(0.5).setScrollFactor(0).setDepth(200);
-            
-            // Add restart button
-            const restartButton = this.add.text(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2 + 50, 'Restart', {
-                fontFamily: 'PixelGame',
-                fontSize: 24,
-                color: '#ffffff',
-                stroke: '#000000',
-                strokeThickness: 4
-            }).setOrigin(0.5).setScrollFactor(0).setDepth(200)
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.scene.restart();
-            }); 
-        
-        }
-    }
-
-    
+  }
 }

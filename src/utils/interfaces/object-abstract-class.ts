@@ -1,4 +1,3 @@
-
 export abstract class BaseObject {
   protected scene: Phaser.Scene;
 

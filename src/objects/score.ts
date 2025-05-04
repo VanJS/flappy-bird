@@ -1,30 +1,26 @@
-
 export class Score extends Phaser.GameObjects.Text {
-    
-    private score: number;
+  private score: number;
 
-    constructor(scene: Phaser.Scene) {
-        super(scene, 0, 0, 'Score: 0', {
-            fontFamily: 'PixelGame',
-            fontSize: 18,
-            color: '#ffffff'});
-        this.setScrollFactor(0).setDepth(100);
-        this.setPosition(scene.cameras.main.width / 2 - this.displayWidth / 2, 50);
-        this.init();
-        this.scene.add.existing(this);
-    }
+  constructor(scene: Phaser.Scene) {
+    super(scene, 0, 0, "Score: 0", {
+      fontFamily: "PixelGame",
+      fontSize: 18,
+      color: "#ffffff",
+    });
+    this.setScrollFactor(0).setDepth(100);
+    this.setPosition(scene.cameras.main.width / 2 - this.displayWidth / 2, 50);
+    this.init();
+    this.scene.add.existing(this);
+  }
 
-    init(): void {
-        this.score = 0;
-    }
+  init(): void {
+    this.score = 0;
+  }
 
-    update(): void{
-       
-    }
+  update(): void {}
 
-    addPoint() {
-        this.score += 10;
-        this.setText(`Score: ${this.score}`);
-    }
-
+  addPoint(point: number) {
+    this.score += point;
+    this.setText(`Score: ${this.score}`);
+  }
 }
