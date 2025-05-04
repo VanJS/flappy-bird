@@ -110,13 +110,7 @@ export class Pipes extends BaseObject {
     // Add pipe pair to the group instead of the array
     this.group.add(topPipe);
     this.group.add(bottomPipe);
-    const sceneKey = this.scene.scene.key;
-    this.scene.events.emit(
-      `newPipe_${sceneKey}`,
-      topPipe,
-      bottomPipe,
-      this.pipeGap_X
-    );
+    this.scene.events.emit(`newPipe`, topPipe, bottomPipe, this.pipeGap_X);
 
     // debugging
     console.log(

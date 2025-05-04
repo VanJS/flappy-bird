@@ -12,13 +12,11 @@ export class Cloud extends BaseObject {
     this.init();
     this.pipeListener = this.GenerateNewCloud.bind(this);
 
-    // Use the scene's unique key in the event name to prevent conflicts
-    const sceneKey = this.scene.scene.key;
-    this.scene.events.on(`newPipe_${sceneKey}`, this.pipeListener);
+    this.scene.events.on(`newPipe`, this.pipeListener);
 
     // Clean up listeners when scene shuts down
     this.scene.events.once("shutdown", () => {
-      this.scene.events.off(`newPipe_${sceneKey}`, this.pipeListener);
+      this.scene.events.off(`newPipe`, this.pipeListener);
     });
   }
 
@@ -38,7 +36,6 @@ export class Cloud extends BaseObject {
     const cloud = this.cloudGroup
       .create(x, y, "cloud")
       .setDepth(CONFIG.CLOUD_DEPTH);
-    cloud.setData("isCollectable", true);
     const scale = generateRandom(0.5, 1.2);
     cloud.setScale(scale);
     this.scene.events.emit("cloudCreated", cloud);
@@ -47,14 +44,14 @@ export class Cloud extends BaseObject {
   }
 
   /**
-   * remove thunders that is off screen
+   * remove clouds that are off screen
    */
   private removeOffScreenClouds() {
     this.cloudGroup.getChildren().forEach((cloud) => {
       const c = cloud as Phaser.Physics.Arcade.Sprite;
       if (c && c.x + c.displayWidth / 2 < 0) {
         this.cloudGroup.remove(c, true, true);
-        console.log(`Destroy thunders at x: ${c.x}, y: ${c.y}`);
+        console.log(`Destroy clouds at x: ${c.x}, y: ${c.y}`);
       }
     });
   }
