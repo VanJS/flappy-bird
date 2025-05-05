@@ -1,7 +1,6 @@
 import { BaseObject } from "../../utils/interfaces/object-abstract-class.ts";
 import * as CONFIG from "../../utils/configuration.ts";
 import { generateRandom } from "../../utils/generateRandom.ts";
-import { Game } from "../../scenes/Game.ts";
 
 export class Cloud extends BaseObject {
   private cloudGroup: Phaser.Physics.Arcade.Group;
@@ -79,13 +78,10 @@ export class Cloud extends BaseObject {
   };
 
   update(): void {
-    const gameScene = this.scene as Game;
-    if (!gameScene.isGamePaused && gameScene.gameStarted) {
-      this.removeOffScreenClouds();
-      this.cloudGroup.getChildren().forEach((cloud) => {
-        const c = cloud as Phaser.Physics.Arcade.Sprite;
-        c.x -= CONFIG.PIPE_SPEED;
-      });
-    }
+    this.removeOffScreenClouds();
+    this.cloudGroup.getChildren().forEach((cloud) => {
+      const c = cloud as Phaser.Physics.Arcade.Sprite;
+      c.x -= CONFIG.PIPE_SPEED;
+    });
   }
 }

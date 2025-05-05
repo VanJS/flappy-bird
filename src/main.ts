@@ -1,6 +1,7 @@
 import { Boot } from './scenes/Boot.ts';
 import { Game as MainGame } from './scenes/Game.ts';
 import { MainMenu } from './scenes/MainMenu.ts';
+import { GameOver } from './scenes/GameOver.ts';
 import { Preloader } from './scenes/Preloader.ts';
 import * as CONFIG from './utils/configuration.ts'
 import { Game, Types } from "phaser";
@@ -20,15 +21,16 @@ const config: Types.Core.GameConfig = {
     physics: {
         default: "arcade",
         arcade: {
-          gravity: { x: 0, y: 0 },
-          debug: false,
-        },   
+            gravity: { x: 0, y: 0 },
+            debug: false,
+        },
     },
     scene: [
         Boot,
         Preloader,
         MainMenu,
         MainGame,
+        GameOver,
     ]
 };
 

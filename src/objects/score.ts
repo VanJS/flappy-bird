@@ -1,5 +1,5 @@
 export class Score extends Phaser.GameObjects.Text {
-  private score: number;
+  private _score: number;
 
   constructor(scene: Phaser.Scene) {
     super(scene, 0, 0, "Score: 0", {
@@ -14,13 +14,17 @@ export class Score extends Phaser.GameObjects.Text {
   }
 
   init(): void {
-    this.score = 0;
+    this._score = 0;
   }
 
-  update(): void {}
+  get score(): number {
+    return this._score;
+  }
+
+  update(): void { }
 
   addPoint(point: number) {
-    this.score += point;
-    this.setText(`Score: ${this.score}`);
+    this._score += point;
+    this.setText(`Score: ${this._score}`);
   }
 }

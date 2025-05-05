@@ -138,27 +138,25 @@ export class Pipes extends BaseObject {
 
   update() {
     const gameScene = this.scene as Game;
-    if (!gameScene.isGamePaused && gameScene.gameStarted) {
-      // update game difficulty
-      const level = gameScene.getDifficultyLevel();
-      this.pipeGap_X =
-        CONFIG.PIPE_GAP_X_BASE - (level - 1) * CONFIG.GAP_X_REDUCTION;
-      this.pipeGap_Y =
-        CONFIG.PIPE_GAP_Y_BASE - (level - 1) * CONFIG.GAP_Y_REDUCTION;
+    // update game difficulty
+    const level = gameScene.getDifficultyLevel();
+    this.pipeGap_X =
+      CONFIG.PIPE_GAP_X_BASE - (level - 1) * CONFIG.GAP_X_REDUCTION;
+    this.pipeGap_Y =
+      CONFIG.PIPE_GAP_Y_BASE - (level - 1) * CONFIG.GAP_Y_REDUCTION;
 
-      this.removeOffScreenPipes();
+    this.removeOffScreenPipes();
 
-      if (this.shouldGenerateNewPipe()) {
-        this.generatePipes();
-      }
-
-      // Iterate over the group's children to update positions
-      this.group.getChildren().forEach((pipe) => {
-        const pipeSprite = pipe as Phaser.Physics.Arcade.Sprite;
-        pipeSprite.x -= CONFIG.PIPE_SPEED;
-      });
-
-      this.gainPoints();
+    if (this.shouldGenerateNewPipe()) {
+      this.generatePipes();
     }
+
+    // Iterate over the group's children to update positions
+    this.group.getChildren().forEach((pipe) => {
+      const pipeSprite = pipe as Phaser.Physics.Arcade.Sprite;
+      pipeSprite.x -= CONFIG.PIPE_SPEED;
+    });
+
+    this.gainPoints();
   }
 }
