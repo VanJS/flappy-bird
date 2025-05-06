@@ -3,15 +3,14 @@ import { BaseObject } from '../utils/interfaces/object-abstract-class.ts';
 import * as CONFIG from '../utils/configuration.ts'
 
 export class Bird extends BaseObject {
-    private bird : Phaser.Physics.Arcade.Sprite | undefined
+    private bird: Phaser.Physics.Arcade.Sprite | undefined
     private x = 0;
     private y = 0;
-    private idleDirection = 1;
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     private jumpKey: Phaser.Input.Keyboard.Key | undefined;
 
     constructor(scene: Phaser.Scene) {
-        super(scene);  
+        super(scene);
         this.init();
         if (this.bird?.body instanceof Phaser.Physics.Arcade.Body) {
             this.bird.body.collideWorldBounds = true;
@@ -19,25 +18,25 @@ export class Bird extends BaseObject {
     }
 
     init() {
-        this.x = this.scene.cameras.main.width/2 - CONFIG.BIRD_OFFSET_X;
-        this.y = this.scene.cameras.main.height/2;
+        this.x = this.scene.cameras.main.width / 2 - CONFIG.BIRD_OFFSET_X;
+        this.y = this.scene.cameras.main.height / 2;
         this.bird = this.scene.physics.add.sprite(
-            this.x, 
-            this.y, 
+            this.x,
+            this.y,
             'bird_sprite')
-        .setScale(0.2)
-        .setDepth(CONFIG.BIRD_DEPTH)
+            .setScale(0.2)
+            .setDepth(CONFIG.BIRD_DEPTH)
             .play('bird_sprite');
-        
+
         // Set hitbox and offset
         this.bird.body?.setSize(this.bird.width * 0.8, this.bird.height * 0.8);
 
         // Add cursor keys
         this.cursors = this.scene.input.keyboard?.createCursorKeys();
-        
+
         // Add space key for jumping
         this.jumpKey = this.scene.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        
+
         // Add touch/click input for mobile
         this.scene.input.on('pointerdown', this.jump, this);
     }
@@ -47,11 +46,7 @@ export class Bird extends BaseObject {
     }
 
     jump() {
-        const gameScene = this.scene as Game;
-        if (!gameScene.gameOver && this.bird) {
-            if (!gameScene.gameStarted) {
-                gameScene.startGame();
-            }
+        if (this.bird) {
             // Apply upward velocity for jump
             this.bird.setVelocityY(-CONFIG.JUMP_STRENGTH);
         }
@@ -61,15 +56,15 @@ export class Bird extends BaseObject {
         if (!this.bird) {
             return;
         }
-        
+
         // Completely stop the bird's movement
         this.bird.setVelocity(0, 0);
-        
+
         // Disable physics to ensure it doesn't move
         if (this.bird.body) {
             this.bird.body.enable = false;
         }
-        
+
         // Stop any animations that might be playing
         this.bird.anims.stop();
     }
@@ -78,36 +73,25 @@ export class Bird extends BaseObject {
         if (!this.bird) {
             return;
         }
-        // create swing effect before game start
-        const gameScene = this.scene as Game
-        if(! gameScene.gameStarted) {
-            if (this.bird.y < this.y - CONFIG.IDLE_OFFEST_Y) {
-                this.idleDirection *= -1;
-            } else if(this.bird.y > this.y + CONFIG.IDLE_OFFEST_Y) {
-                this.idleDirection *= -1;
-            }
-            this.bird.y += this.idleDirection;
-        } else if (!gameScene.gameOver && !gameScene.isGamePaused) {
-            // Apply gravity manually or let physics handle it
-            const velocityY = this.bird.body?.velocity.y;
-            if (velocityY !== undefined) {
-                this.bird.setVelocityY(velocityY + CONFIG.GRAVITY);
-            }
-            
-            // Check for jump input
-            if ((this.jumpKey && Phaser.Input.Keyboard.JustDown(this.jumpKey)) || 
-                (this.cursors?.up && Phaser.Input.Keyboard.JustDown(this.cursors.up))) {
-                this.jump();
-            }
-            
-            // Rotate bird based on velocity
-            if (this.bird.body && this.bird.body.velocity.y > 0) {
-                // Point downward when falling
-                this.bird.setAngle(Math.min(this.bird.angle + 2, 30));
-            } else if (this.bird.body) {
-                // Point upward when rising
-                this.bird.setAngle(Math.max(this.bird.angle - 4, -30));
-            }
+        // Apply gravity manually or let physics handle it
+        const velocityY = this.bird.body?.velocity.y;
+        if (velocityY !== undefined) {
+            this.bird.setVelocityY(velocityY + CONFIG.GRAVITY);
+        }
+
+        // Check for jump input
+        if ((this.jumpKey && Phaser.Input.Keyboard.JustDown(this.jumpKey)) ||
+            (this.cursors?.up && Phaser.Input.Keyboard.JustDown(this.cursors.up))) {
+            this.jump();
+        }
+
+        // Rotate bird based on velocity
+        if (this.bird.body && this.bird.body.velocity.y > 0) {
+            // Point downward when falling
+            this.bird.setAngle(Math.min(this.bird.angle + 2, 30));
+        } else if (this.bird.body) {
+            // Point upward when rising
+            this.bird.setAngle(Math.max(this.bird.angle - 4, -30));
         }
     }
 }
