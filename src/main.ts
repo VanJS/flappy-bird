@@ -5,6 +5,7 @@ import { GameOver } from './scenes/GameOver.ts';
 import { Preloader } from './scenes/Preloader.ts';
 import * as CONFIG from './utils/configuration.ts'
 import { Game, Types } from "phaser";
+import CountDown from './scenes/CountDown.ts';
 
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
@@ -29,6 +30,7 @@ const config: Types.Core.GameConfig = {
         Boot,
         Preloader,
         MainMenu,
+        CountDown,
         MainGame,
         GameOver,
     ]
