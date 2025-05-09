@@ -30,14 +30,14 @@ export class MainMenu extends Scene {
         }).setOrigin(0.5);
 
         this.input.once('pointerdown', () => {
-            this.scene.start('Game');
+            this.scene.start('CountDown');
         });
     }
 
     update() {
         // Check for jump input
         if (this.startKey && Phaser.Input.Keyboard.JustDown(this.startKey)) {
-            this.scene.start('Game');
+            this.scene.start('CountDown');
         }
     }
 }
