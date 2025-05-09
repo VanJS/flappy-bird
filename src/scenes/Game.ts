@@ -56,6 +56,13 @@ export class Game extends Scene {
     this.targetLevelTime = this.gameStartTime + this.difficultyInterval;
   }
 
+  // Add shutdown method to stop music when scene stops
+  shutdown() {
+    if (this.sound.get('background-music')) {
+        this.sound.stopByKey('background-music');
+    }
+  }
+
   create() {
     // Set up main camera
     this.camera = this.cameras.main;

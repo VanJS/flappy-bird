@@ -19,10 +19,12 @@ class CountDown extends Scene {
 
 
     create() {
+        this.countdownValue = 3;
         this.backgroundObj = new Background(this);
         this.groundObj = new Ground(this);
         this.birdObj = new Bird(this); 
 
+        this.input.enabled = false;
 
         this.countdownText = this.add.text(
             this.cameras.main.centerX,
@@ -51,6 +53,7 @@ class CountDown extends Scene {
 
         if (this.countdownValue <= 0) {
             this.timerEvent.remove();
+            this.input.enabled = true; 
             this.scene.start("Game");
         }
     }

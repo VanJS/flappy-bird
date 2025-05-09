@@ -50,19 +50,19 @@ export class GameOver extends Scene {
         restartButton.setStyle({ fill: '#fff' });
       })
       .on('pointerdown', () => {
-        this.scene.start('Game');
+        this.scene.start('CountDown');
       });
 
     // malke it consistent with main menu where click = start
     this.input.once('pointerdown', () => {
-      this.scene.start('Game');
+      this.scene.start('CountDown');
     });
   }
 
   update() {
     // Check for jump input
     if (this.startKey && Phaser.Input.Keyboard.JustDown(this.startKey)) {
-      this.scene.start('Game');
+      this.scene.start('CountDown');
     }
   }
 }
