@@ -8,9 +8,6 @@ class CountDown extends Scene {
     private countdownText: Phaser.GameObjects.Text;
     private countdownValue: number = 3;
     private timerEvent: Phaser.Time.TimerEvent;
-    private backgroundObj: Background;
-    private groundObj: Ground;
-    private birdObj: Bird;
 
 
     constructor() {
@@ -20,9 +17,9 @@ class CountDown extends Scene {
 
     create() {
         this.countdownValue = 3;
-        this.backgroundObj = new Background(this);
-        this.groundObj = new Ground(this);
-        this.birdObj = new Bird(this); 
+        new Background(this);
+        new Ground(this);
+        new Bird(this); 
 
         this.input.enabled = false;
 
