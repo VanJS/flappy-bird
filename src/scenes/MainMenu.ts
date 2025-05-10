@@ -1,5 +1,6 @@
 import { Scene, GameObjects } from 'phaser';
 import * as CONFIG from '../utils/configuration.ts'
+import { OrientationGuide } from '../objects/OrientationGuide.ts';
 
 export class MainMenu extends Scene {
     background: GameObjects.Image;
@@ -7,6 +8,7 @@ export class MainMenu extends Scene {
     title: GameObjects.Text;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
     startKey: Phaser.Input.Keyboard.Key | undefined;
+    private orientationGuide: OrientationGuide;
 
     constructor() {
         super('MainMenu');
@@ -29,15 +31,22 @@ export class MainMenu extends Scene {
             align: 'center'
         }).setOrigin(0.5);
 
+        // Create orientation guide
+        this.orientationGuide = new OrientationGuide(this);
+
         this.input.once('pointerdown', () => {
-            this.scene.start('CountDown');
+            if (!this.orientationGuide.isVisible()) {
+                this.scene.start('CountDown');
+            }
         });
     }
 
     update() {
         // Check for jump input
         if (this.startKey && Phaser.Input.Keyboard.JustDown(this.startKey)) {
-            this.scene.start('CountDown');
+            if (!this.orientationGuide.isVisible()) {
+                this.scene.start('CountDown');
+            }
         }
     }
 }
