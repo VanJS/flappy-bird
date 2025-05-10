@@ -114,31 +114,9 @@ export class Scoreboard {
   }
 
   /**
-   * update the high scores if the score is higher than any of the recorded high scores
-   * @param score new score to check
-   * @param playerName name of the player
-   */
-  public updateHighScores(score: number, playerName: string = "Husky") {
-    const ranking = this.checkRanking(score);
-    if (ranking == null) return;
-    const scores = this.getHighScores();
-    scores.splice(ranking, 0, { name: playerName, score: score });
-    scores.pop();
-    try {
-      localStorage.setItem(this.localStorageKey, JSON.stringify(scores));
-    } catch (e) {
-      console.error("Error saving to localStorage:", e);
-    }
-    this.highScores = scores;
-    this.displayHighScores();
-  }
-
-  /**
    * display the high scores on the screen
    */
-  public displayHighScores() {
-    this.clearHighScoreTexts();
-
+  private displayHighScores() {
     //rank text
     this.highScores.forEach((entry, index) => {
       const rank = this.scene.add
@@ -181,6 +159,27 @@ export class Scoreboard {
         .setOrigin(0.5);
       this.scoreText.push(score);
     });
+  }
+
+  /**
+   * update the high scores if the score is higher than any of the recorded high scores
+   * @param score new score to check
+   * @param playerName name of the player
+   */
+  public updateHighScores(score: number, playerName: string = "Husky") {
+    const ranking = this.checkRanking(score);
+    if (ranking == null) return;
+    const scores = this.getHighScores();
+    scores.splice(ranking, 0, { name: playerName, score: score });
+    scores.pop();
+    try {
+      localStorage.setItem(this.localStorageKey, JSON.stringify(scores));
+    } catch (e) {
+      console.error("Error saving to localStorage:", e);
+    }
+    this.highScores = scores;
+    this.clearHighScoreTexts();
+    this.displayHighScores();
   }
 
   /**
