@@ -28,6 +28,8 @@ export class Preloader extends Scene {
     }
 
     preload() {
+        // Load the rotation guide image
+        this.load.image('rotate-phone', 'assets/images/rotate-phone.png');
 
         //  preload animation json file
         this.load.json('animations_json', 'assets/data/animations.json');
