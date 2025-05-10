@@ -17,6 +17,11 @@ class CountDown extends Scene {
 
     create() {
         this.countdownValue = 3;
+        
+        // Play a random countdown sound
+        const soundKey = Math.floor(Math.random() * 5) + 1;
+        this.sound.play(`countdown${soundKey}`, { volume: 0.8 });
+        
         new Background(this);
         new Ground(this);
         new Bird(this); 
