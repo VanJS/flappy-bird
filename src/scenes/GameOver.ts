@@ -110,7 +110,6 @@ export class GameOver extends Scene {
     // Check for jump input
     if (this.startKey && Phaser.Input.Keyboard.JustDown(this.startKey)) {
       if (this.scoreboard) {
-        this.scoreboard.clearHighScoreTexts();
         this.scoreboard = null;
       }
       this.scene.start('Game');

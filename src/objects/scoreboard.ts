@@ -72,9 +72,6 @@ export class Scoreboard {
         color: "#ffffff",
       })
       .setOrigin(0.5);
-
-    // Display high scores
-    this.displayHighScores();
   }
 
   /**
@@ -185,7 +182,7 @@ export class Scoreboard {
   /**
    * clear the high score texts from the screen
    */
-  public clearHighScoreTexts() {
+  private clearHighScoreTexts() {
     this.rankText.forEach((rank) => rank.destroy());
     this.playerText.forEach((player) => player.destroy());
     this.scoreText.forEach((score) => score.destroy());
