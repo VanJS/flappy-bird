@@ -60,10 +60,10 @@ export class Preloader extends Scene {
         
         // Load countdown sounds
         this.load.audio('countdown1', 'assets/audio/countdown/count-down1.mp3');
-        this.load.audio('countdown2', 'assets/audio/countdown/count-down2.MP3');
-        this.load.audio('countdown3', 'assets/audio/countdown/count-down3.MP3');
-        this.load.audio('countdown4', 'assets/audio/countdown/count-down4.MP3');
-        this.load.audio('countdown5', 'assets/audio/countdown/count-down5.MP3');
+        this.load.audio('countdown2', 'assets/audio/countdown/count-down2.mp3');
+        this.load.audio('countdown3', 'assets/audio/countdown/count-down3.mp3');
+        this.load.audio('countdown4', 'assets/audio/countdown/count-down4.mp3');
+        this.load.audio('countdown5', 'assets/audio/countdown/count-down5.mp3');
         
 
     }
