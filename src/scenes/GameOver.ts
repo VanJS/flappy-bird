@@ -85,12 +85,12 @@ export class GameOver extends Scene {
         restartButton.setStyle({ fill: '#fff' });
       })
       .on('pointerdown', () => {
-        this.scene.start('Game');
+        this.scene.start('CountDown');
       });
 
     // malke it consistent with main menu where click = start
     this.input.once('pointerdown', () => {
-      this.scene.start('Game');
+      this.scene.start('CountDown');
     });
 
     //reset scoreboard
@@ -112,7 +112,7 @@ export class GameOver extends Scene {
       if (this.scoreboard) {
         this.scoreboard = null;
       }
-      this.scene.start('Game');
+      this.scene.start('CountDown');
     }
   }
 }
