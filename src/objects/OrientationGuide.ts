@@ -130,7 +130,7 @@ export class OrientationGuide {
         }
     }
 
-    private hideOverlay = (): void => {
+    private hideOverlay(): void {
         this.overlay.setVisible(false);
         
         // Stop the pulse effect when hiding
