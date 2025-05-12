@@ -139,7 +139,6 @@ export class OrientationGuide {
         }
     }
 
-    public isVisible(): boolean {
         return this.overlay?.visible || false;
     }
 } 
