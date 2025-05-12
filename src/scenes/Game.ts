@@ -70,7 +70,6 @@ export class Game extends Scene {
       .setOrigin(0, 0)
       .setScrollFactor(0.8);
 
-
     // add score component
     this.score = new Score(this);
     this.events.on("pipePassed", this.onPipePassed);
