@@ -117,7 +117,7 @@ export class OrientationGuide {
             };
             
             // Listen for orientation changes
-            mediaQuery.addEventListener('change', orientationChangeHandler);
+            mediaQuery.addEventListener('change', orientationChangeHandler, { once: true });
         }
     }
     
