@@ -99,7 +99,8 @@ export class OrientationGuide {
 
     private checkOrientation(): void {
         // Use matchMedia to check if we're in portrait mode on a mobile device
-        const mediaQuery = window.matchMedia("(orientation: portrait) and (max-width: 900px)");
+        // This is the modern best practice for detecting orientation
+        const mediaQuery = window.matchMedia("(orientation: portrait) and (max-width: 600px)");
         
         // Show overlay if in portrait mode
         if (mediaQuery.matches) {
