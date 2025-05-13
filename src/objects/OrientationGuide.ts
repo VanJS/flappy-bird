@@ -12,8 +12,8 @@ export class OrientationGuide {
     constructor(scene: Scene) {
         this.scene = scene;
         
-        // Only check orientation in the MainMenu scene and only if we haven't shown it before
-        if (scene.scene.key === 'MainMenu' && !OrientationGuide.hasBeenShownBefore) {
+        // Only check orientation if we haven't shown the guide before
+        if (!OrientationGuide.hasBeenShownBefore) {
             this.createOverlay();
             this.checkOrientation();
         }
@@ -111,12 +111,10 @@ export class OrientationGuide {
             const orientationChangeHandler = () => {
                 if (!mediaQuery.matches) {
                     this.hideOverlay();
-                    // Remove the event listener after hiding
-                    mediaQuery.removeEventListener('change', orientationChangeHandler);
                 }
             };
             
-            // Listen for orientation changes
+            // Listen for orientation changes with { once: true } to automatically remove the listener after it triggers once
             mediaQuery.addEventListener('change', orientationChangeHandler, { once: true });
         }
     }
@@ -139,6 +137,7 @@ export class OrientationGuide {
         }
     }
 
+    public isVisible(): boolean {
         return this.overlay?.visible || false;
     }
 } 
