@@ -13,6 +13,7 @@ export class Pipes extends BaseObject {
 
   private passed: boolean;
   private birdX: number; // x position of bird
+  private pipeIndex: number
 
   constructor(
     scene: Phaser.Scene,
@@ -23,6 +24,7 @@ export class Pipes extends BaseObject {
     this.group = group;
     this.offset_X = offset;
     this.init();
+    this.pipeIndex = 0;
   }
 
   init() {
@@ -40,13 +42,14 @@ export class Pipes extends BaseObject {
   private createPipe(
     x: number,
     y: number,
-    rotation: number
+    rotation: number,
+    pipeType: CONFIG.PipeType
   ): Phaser.Physics.Arcade.Sprite {
     const pipe = this.scene.physics.add
-      .sprite(x, y, "pipe")
+      .sprite(x, y, pipeType.key)
       .setDepth(CONFIG.PIPE_DEPTH)
       .setRotation(rotation);
-    pipe.setScale(0.2);
+    pipe.setScale(pipeType.scale);
     pipe.setVisible(true);
 
     // Set hitbox and offset
@@ -88,8 +91,17 @@ export class Pipes extends BaseObject {
    * randomly generate new top and bottom pipes
    */
   private generatePipes() {
+    // Randomly select a pipe type
+  
+    const selectedPipeType = CONFIG.PIPE_TYPES[this.pipeIndex];
+    if (this.pipeIndex === CONFIG.PIPE_TYPES.length - 1) {
+      this.pipeIndex = 0;
+    } else {
+      this.pipeIndex++;
+    }
+
     //create new bottom pipe
-    const bottomPipe = this.createPipe(this.initialPos_X, 0, 0);
+    const bottomPipe = this.createPipe(this.initialPos_X, 0, 0, selectedPipeType);
 
     //randomly generate Y position of bottom pipe
     const minBottomY =
@@ -101,7 +113,7 @@ export class Pipes extends BaseObject {
     bottomPipe.setY(bottomY);
 
     //create new top pipe
-    const topPipe = this.createPipe(this.initialPos_X, 0, Math.PI);
+    const topPipe = this.createPipe(this.initialPos_X, 0, Math.PI, selectedPipeType);
 
     //calculate Y position of top pipe to keep the gap
     const topY = bottomY - bottomPipe.displayHeight / 2 - this.pipeGap_Y;
