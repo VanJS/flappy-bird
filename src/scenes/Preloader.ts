@@ -65,7 +65,8 @@ export class Preloader extends Scene {
         this.load.audio('countdown4', 'assets/audio/countdown/count-down4.mp3');
         this.load.audio('countdown5', 'assets/audio/countdown/count-down5.mp3');
         
-
+        // Load orientation guide assets
+        this.load.image('rotate-phone', 'assets/images/rotate-phone.png');
     }
 
     create() {
