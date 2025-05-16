@@ -38,7 +38,7 @@ export class Cloud extends BaseObject {
     const scale = generateRandom(0.5, 1.2);
     cloud.setScale(scale);
     this.scene.events.emit("cloudCreated", cloud);
-    console.log(`Created cloud at x: ${x}, y: ${y}`);
+    //console.log(`Created cloud at x: ${x}, y: ${y}`);
     return cloud;
   }
 
@@ -50,7 +50,7 @@ export class Cloud extends BaseObject {
       const c = cloud as Phaser.Physics.Arcade.Sprite;
       if (c && c.x + c.displayWidth / 2 < 0) {
         this.cloudGroup.remove(c, true, true);
-        console.log(`Destroy clouds at x: ${c.x}, y: ${c.y}`);
+        //console.log(`Destroy clouds at x: ${c.x}, y: ${c.y}`);
       }
     });
   }
@@ -68,10 +68,7 @@ export class Cloud extends BaseObject {
         CONFIG.CLOUD_OFFSET_X +
         i * CONFIG.CLOUD_GAP_X;
       const minY = CONFIG.CLOUD_OFFSET_Y;
-      const maxY =
-        this.scene.cameras.main.height -
-        CONFIG.GROUND_HEIGHT -
-        bottomPipe.displayHeight;
+      const maxY = this.scene.cameras.main.height - 2 * CONFIG.GROUND_HEIGHT;
       const cloudY = generateRandom(minY, maxY);
       this.createCloud(cloudX, cloudY);
     }
