@@ -100,7 +100,7 @@ export class Scoreboard {
    * @param score new score to check
    * @returns ranking index if score is higher than any of the high scores, otherwise null
    */
-  private checkRanking(score: number): number | null {
+  public checkRanking(score: number): number | null {
     if (score <= 0) return null;
     for (let i = 0; i < this.highScores.length; i++) {
       if (score > this.highScores[i].score) {
@@ -113,7 +113,7 @@ export class Scoreboard {
   /**
    * display the high scores on the screen
    */
-  private displayHighScores() {
+  public displayHighScores() {
     //rank text
     this.highScores.forEach((entry, index) => {
       const rank = this.scene.add
@@ -166,6 +166,7 @@ export class Scoreboard {
   public updateHighScores(score: number, playerName: string = "Husky") {
     const ranking = this.checkRanking(score);
     if (ranking == null) return;
+    // playerName = prompt("Enter your name:") ?? "Husky";
     const scores = this.getHighScores();
     scores.splice(ranking, 0, { name: playerName, score: score });
     scores.pop();
