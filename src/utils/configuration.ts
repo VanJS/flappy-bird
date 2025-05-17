@@ -31,8 +31,8 @@ export const JUMP_STRENGTH = 350;
 export const GRAVITY = 20;
 
 export interface PipeType {
-  key: string;          // Asset key for the pipe sprite
-  scale: number;        // The scale to apply to this pipe sprite
+  key: string;          
+  scale: number;        
 }
 
 export const PIPE_TYPES: PipeType[] = [

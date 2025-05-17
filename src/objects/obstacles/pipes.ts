@@ -91,14 +91,11 @@ export class Pipes extends BaseObject {
    * randomly generate new top and bottom pipes
    */
   private generatePipes() {
-    // Randomly select a pipe type
-  
+
+    //Pipe appears in order
+    this.pipeIndex = (this.pipeIndex + 1) % CONFIG.PIPE_TYPES.length;
     const selectedPipeType = CONFIG.PIPE_TYPES[this.pipeIndex];
-    if (this.pipeIndex === CONFIG.PIPE_TYPES.length - 1) {
-      this.pipeIndex = 0;
-    } else {
-      this.pipeIndex++;
-    }
+
 
     //create new bottom pipe
     const bottomPipe = this.createPipe(this.initialPos_X, 0, 0, selectedPipeType);
