@@ -128,7 +128,7 @@ export class NameEntry {
 
   private submit() {
     this.scene.input.keyboard?.off("keydown", this.handleKeyInput, this);
-    const playerName = this.currentName;
+    const playerName = this.currentName || this.defaultName;
     this.scene.events.emit("nameSubmitted", playerName);
     this.container.destroy();
   }
