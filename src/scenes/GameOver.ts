@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import * as CONFIG from '../utils/configuration.ts';
 import { Scoreboard } from '../objects/scoreboard.ts';
+import { NameEntry } from '../objects/name-entry.ts';
 
 export class GameOver extends Scene {
   score: number;
@@ -9,6 +10,7 @@ export class GameOver extends Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys | undefined;
   startKey: Phaser.Input.Keyboard.Key | undefined;
 
+  nameEntry: NameEntry | null;
   constructor() {
     super('GameOver');
   }
@@ -18,6 +20,8 @@ export class GameOver extends Scene {
   }
 
   create() {
+    // test name entry
+
     // Add cursor keys
     this.cursors = this.input.keyboard?.createCursorKeys();
 
@@ -57,9 +61,23 @@ export class GameOver extends Scene {
 
     // create scoreboard
     this.scoreboard = new Scoreboard(this);
-    this.scoreboard.create();
-    if (this.scoreboard) {
-      this.scoreboard.updateHighScores(this.score, 'Husky');
+
+    // update the scoreboard if high score
+    const ranking = this.scoreboard.checkRanking(this.score);
+    if (ranking !== null) {
+      this.nameEntry = new NameEntry(this);
+      this.nameEntry.create();
+      this.events.once('nameSubmitted', (name: string) => {
+        if (this.scoreboard) {
+          this.scoreboard.create();
+          this.scoreboard.updateHighScores(this.score, name);
+        }
+      });
+    }
+    // display the scoreboard
+    else {
+      this.scoreboard.create();
+      this.scoreboard.displayHighScores();
     }
 
     const restartButton = this.add.text(
@@ -88,10 +106,10 @@ export class GameOver extends Scene {
         this.scene.start('CountDown');
       });
 
-    // malke it consistent with main menu where click = start
-    this.input.once('pointerdown', () => {
-      this.scene.start('CountDown');
-    });
+    // // malke it consistent with main menu where click = start
+    // this.input.once('pointerdown', () => {
+    //   this.scene.start('CountDown');
+    // });
 
     //reset scoreboard
     if (this.input.keyboard) {
