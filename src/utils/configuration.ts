@@ -36,10 +36,10 @@ export interface PipeType {
 }
 
 export const PIPE_TYPES: PipeType[] = [
-    { key: "pipe-5", scale: 0.7 }, 
-    { key: "pipe-6", scale: 0.7 }, 
-    { key: "pipe-1", scale: 0.3 }, 
-    { key: "pipe-2", scale: 0.7 }, 
-    { key: "pipe-3", scale: 0.8 }, 
-    { key: "pipe-4", scale: 0.8 }, 
+  { key: "pipe-6", scale: 0.5 }, 
+  { key: "pipe-5", scale: 0.5 }, 
+  { key: "pipe-2", scale: 0.5 }, 
+  { key: "pipe-3", scale: 0.5 }, 
+  { key: "pipe-4", scale: 0.5 }, 
+  { key: "pipe-1", scale: 0.17 }, 
 ];

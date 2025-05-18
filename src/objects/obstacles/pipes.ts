@@ -92,8 +92,12 @@ export class Pipes extends BaseObject {
    */
   private generatePipes() {
 
-    //Pipe appears in order
-    this.pipeIndex = (this.pipeIndex + 1) % CONFIG.PIPE_TYPES.length;
+    // Randomizes pipe order
+    let randomIndex = Math.floor(Math.random() * CONFIG.PIPE_TYPES.length);
+    while (randomIndex === this.pipeIndex) { 
+      randomIndex = Math.floor(Math.random() * CONFIG.PIPE_TYPES.length);
+    }
+    this.pipeIndex = randomIndex;
     const selectedPipeType = CONFIG.PIPE_TYPES[this.pipeIndex];
 
 
