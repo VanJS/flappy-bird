@@ -39,8 +39,33 @@
           },
           {
             "type": "image",
-            "key": "pipe",
-            "url": "building-1.png"
+            "key": "pipe-1",
+            "url": "pipe-1.png"
+          },
+          {
+            "type": "image",
+            "key": "pipe-2",
+            "url": "pipe-2.png"
+          },
+          {
+            "type": "image",
+            "key": "pipe-3",
+            "url": "pipe-3.png"
+          },
+          {
+            "type": "image",
+            "key": "pipe-4",
+            "url": "pipe-4.png"
+          },
+          {
+            "type": "image",
+            "key": "pipe-5",
+            "url": "pipe-5.png"
+          },
+          {
+            "type": "image",
+            "key": "pipe-6",
+            "url": "pipe-6.png"
           },
           {
             "type": "image",
