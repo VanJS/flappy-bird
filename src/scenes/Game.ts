@@ -44,8 +44,6 @@ export class Game extends Scene {
     // Reset game state variables when scene starts or restarts
     this.gameObjects = [];
     this.difficultyLevel = 1;
-    this.gameStartTime = 0;
-    this.targetLevelTime = 0;
 
     // Play background music
     this.sound.play('background-music', { loop: true, volume: 0.5 });
@@ -54,6 +52,7 @@ export class Game extends Scene {
     this.physics.world.gravity.y = CONFIG.GRAVITY;
     this.gameStartTime = this.time.now;
     this.targetLevelTime = this.gameStartTime + this.difficultyInterval;
+    console.log(`Game initialized at ${this.gameStartTime}, first difficulty increase at ${this.targetLevelTime}`);
   }
 
   create() {
@@ -139,7 +138,7 @@ export class Game extends Scene {
     const currentTime = this.time.now;
 
     // Update difficulty if game has started
-    if (this.gameStartTime > 0) {
+    if (this.gameStartTime >= 0) {
       this.updateDifficulty(currentTime);
     }
 
@@ -159,8 +158,9 @@ export class Game extends Scene {
       this.difficultyLevel < CONFIG.DIFFICULTY_LEVEL_MAX
     ) {
       this.difficultyLevel++;
-      this.targetLevelTime = currentTime + this.difficultyInterval;
-      console.log(`Difficulty increased to level ${this.difficultyLevel}`);
+      this.targetLevelTime += this.difficultyInterval;
+      console.log(`Difficulty increased to level ${this.difficultyLevel} at ${this.time.now}`);
+      console.log(`Next difficulty increase at time ${this.targetLevelTime}`);
     }
   }
 
