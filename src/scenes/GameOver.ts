@@ -20,8 +20,6 @@ export class GameOver extends Scene {
   }
 
   create() {
-    // test name entry
-
     // Add cursor keys
     this.cursors = this.input.keyboard?.createCursorKeys();
 
@@ -105,11 +103,6 @@ export class GameOver extends Scene {
       .on('pointerdown', () => {
         this.scene.start('CountDown');
       });
-
-    // // malke it consistent with main menu where click = start
-    // this.input.once('pointerdown', () => {
-    //   this.scene.start('CountDown');
-    // });
 
     //reset scoreboard
     if (this.input.keyboard) {

@@ -166,7 +166,6 @@ export class Scoreboard {
   public updateHighScores(score: number, playerName: string = "Husky") {
     const ranking = this.checkRanking(score);
     if (ranking == null) return;
-    // playerName = prompt("Enter your name:") ?? "Husky";
     const scores = this.getHighScores();
     scores.splice(ranking, 0, { name: playerName, score: score });
     scores.pop();
