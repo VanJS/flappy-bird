@@ -1,6 +1,7 @@
 import { Scene, GameObjects } from 'phaser';
 import * as CONFIG from '../utils/configuration.ts'
 import { OrientationGuide } from '../objects/OrientationGuide';
+import { Logos } from '../objects/Logos';
 
 export class MainMenu extends Scene {
     background: GameObjects.Image;
@@ -33,6 +34,9 @@ export class MainMenu extends Scene {
 
         // Create orientation guide
         this.orientationGuide = new OrientationGuide(this);
+        
+        // Add logos to the top right corner
+        Logos.get(this);
 
         this.input.once('pointerdown', () => {
             this.scene.start('CountDown');

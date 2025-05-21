@@ -67,6 +67,9 @@ export class Preloader extends Scene {
         
         // Load orientation guide assets
         this.load.image('rotate-phone', 'assets/images/rotate-phone.png');
+        
+        // Load VanJS and NEU logo
+        this.load.image('vanjs-neu-logo', 'assets/vanjs-neu-logo.png');
     }
 
     create() {
