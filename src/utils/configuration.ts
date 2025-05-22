@@ -32,14 +32,17 @@ export const GRAVITY = 20;
 
 export interface PipeType {
   key: string;          
-  scale: number;        
+  scale: number;
+  hitboxWidthRatio: number;
+  hitboxHeightRatio: number;
+  hitboxOffsetX?: number;
+  hitboxOffsetY?: number;
 }
 
 export const PIPE_TYPES: PipeType[] = [
-  { key: "pipe-6", scale: 0.5 }, 
-  { key: "pipe-5", scale: 0.5 }, 
-  { key: "pipe-2", scale: 0.5 }, 
-  { key: "pipe-3", scale: 0.5 }, 
-  { key: "pipe-4", scale: 0.5 }, 
-  { key: "pipe-1", scale: 0.17 }, 
+  { key: "pipe-5", scale: 0.5, hitboxWidthRatio: 0.63, hitboxHeightRatio: 1, hitboxOffsetX: 30, hitboxOffsetY: 0 }, 
+  { key: "pipe-2", scale: 0.5, hitboxWidthRatio: 0.45, hitboxHeightRatio: 1, hitboxOffsetX: 30, hitboxOffsetY: -10 }, 
+  { key: "pipe-3", scale: 0.5, hitboxWidthRatio: 0.95, hitboxHeightRatio: 0.9, hitboxOffsetX: 0, hitboxOffsetY: 0 }, 
+  { key: "pipe-4", scale: 0.5, hitboxWidthRatio: 0.95, hitboxHeightRatio: 0.9, hitboxOffsetX: 0, hitboxOffsetY: 0 }, 
+  { key: "pipe-1", scale: 0.17, hitboxWidthRatio: 0.95, hitboxHeightRatio: 0.9, hitboxOffsetX: 0, hitboxOffsetY: 0 }, 
 ];
