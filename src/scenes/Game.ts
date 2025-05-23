@@ -7,6 +7,7 @@ import { Bird } from "../objects/bird";
 import { Pipes } from "../objects/obstacles/pipes";
 import { Cloud } from "../objects/obstacles/cloud";
 import { Score } from "../objects/score.ts";
+import { Logos } from "../objects/Logos";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
@@ -78,6 +79,9 @@ export class Game extends Scene {
     // Set default physics properties for objects added to this group
     this.pipesGroup.defaults.setAllowGravity = false;
     this.pipesGroup.defaults.setImmovable = true;
+    
+    // Add logo to the screen
+    new Logos(this);
 
     // create objects to the screen, passing the group to Pipes
     this.gameObjects.push(

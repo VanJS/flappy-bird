@@ -35,8 +35,8 @@ export class MainMenu extends Scene {
         // Create orientation guide
         this.orientationGuide = new OrientationGuide(this);
         
-        // Add logos to the top right corner
-        Logos.get(this);
+        // Add logo to the screen
+        new Logos(this);
 
         this.input.once('pointerdown', () => {
             this.scene.start('CountDown');

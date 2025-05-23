@@ -2,6 +2,7 @@ import { Scene } from "phaser";
 import { Background } from "../objects/background";
 import { Ground } from "../objects/ground";
 import { Bird } from "../objects/bird";
+import { Logos } from "../objects/Logos";
 
 
 class CountDown extends Scene {
@@ -25,6 +26,9 @@ class CountDown extends Scene {
         new Background(this);
         new Ground(this);
         new Bird(this); 
+        
+        // Add logo to the screen
+        new Logos(this);
 
         this.input.enabled = false;
 

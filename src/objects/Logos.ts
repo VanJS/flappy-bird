@@ -1,29 +1,16 @@
 import { Scene } from "phaser";
-import * as CONFIG from "../utils/configuration";
+
 
 export class Logos {
-    private static instance: Logos | null = null;
     private scene: Scene;
-    private container: Phaser.GameObjects.Container | null = null;
+    private container: Phaser.GameObjects.Container;
     
-    private constructor(scene: Scene) {
+    constructor(scene: Scene) {
         this.scene = scene;
         this.create();
-        this.setupSceneTransitions();
-    }
-    
-    public static get(scene: Scene): Logos {
-        if (!Logos.instance) {
-            Logos.instance = new Logos(scene);
-        }
-        return Logos.instance;
     }
     
     private create(): void {
-        if (this.container) {
-            this.container.destroy();
-        }
-        
         this.container = this.scene.add.container(0, 0);
         
         // Add the logo image
@@ -44,16 +31,4 @@ export class Logos {
         // Make sure it appears above game elements
         this.container.setDepth(1000);
     }
-    
-    private setupSceneTransitions(): void {
-        const game = this.scene.game;
-        
-        game.events.on('prestep', () => {
-            const currentScene = game.scene.getScenes(true)[0];
-            if (currentScene && currentScene !== this.scene) {
-                this.scene = currentScene;
-                this.create();
-            }
-        });
-    }
-} 
+}
