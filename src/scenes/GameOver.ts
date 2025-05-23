@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import * as CONFIG from '../utils/configuration.ts';
 import { Scoreboard } from '../objects/scoreboard.ts';
 import { NameEntry } from '../objects/name-entry.ts';
+import { Logos } from '../objects/Logos';
 
 export class GameOver extends Scene {
   score: number;
@@ -29,6 +30,9 @@ export class GameOver extends Scene {
     );
 
     this.add.image(512, 384, 'menu-bg');
+
+    // Add logo to the screen
+    new Logos(this);
 
     this.add
       .text(CONFIG.GAME_WIDTH / 2, 50, 'Game Over', {
