@@ -53,7 +53,8 @@ export class Pipes extends BaseObject {
     pipe.setVisible(true);
 
     // Set hitbox and offset
-    pipe.body?.setSize(pipe.width * 0.95, pipe.height * 0.9);
+    pipe.body?.setSize(pipe.width * pipeType.hitboxWidthRatio, pipe.height * pipeType.hitboxHeightRatio);
+    pipe.body?.setOffset(pipeType.hitboxOffsetX ?? 0, pipeType.hitboxOffsetY ?? 0);
 
     // Make the body static and immovable
     pipe.body?.setAllowGravity(false);
