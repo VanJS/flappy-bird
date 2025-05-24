@@ -49,7 +49,7 @@ export class Pipes extends BaseObject {
       .sprite(x, y, pipeType.key)
       .setDepth(CONFIG.PIPE_DEPTH)
       .setRotation(rotation);
-    pipe.setScale(pipeType.scale);
+    pipe.setScale(pipeType.scaleX, pipeType.scaleY);
     pipe.setVisible(true);
 
     // Set hitbox and offset
