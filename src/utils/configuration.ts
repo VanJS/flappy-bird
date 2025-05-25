@@ -32,7 +32,8 @@ export const GRAVITY = 20;
 
 export interface PipeType {
   key: string;          
-  scale: number;
+  scaleX: number;
+  scaleY: number;
   hitboxWidthRatio: number;
   hitboxHeightRatio: number;
   hitboxOffsetX?: number;
@@ -40,9 +41,9 @@ export interface PipeType {
 }
 
 export const PIPE_TYPES: PipeType[] = [
-  { key: "pipe-5", scale: 0.5, hitboxWidthRatio: 0.6, hitboxHeightRatio: 0.95, hitboxOffsetX: 35, hitboxOffsetY: 5 }, 
-  { key: "pipe-2", scale: 0.5, hitboxWidthRatio: 0.45, hitboxHeightRatio: 1, hitboxOffsetX: 30, hitboxOffsetY: 0 }, 
-  { key: "pipe-3", scale: 0.5, hitboxWidthRatio: 0.95, hitboxHeightRatio: 0.95, hitboxOffsetX: 0, hitboxOffsetY: 15 }, 
-  { key: "pipe-4", scale: 0.5, hitboxWidthRatio: 0.95, hitboxHeightRatio: 0.95, hitboxOffsetX: 0, hitboxOffsetY: 15 }, 
-  { key: "pipe-1", scale: 0.17, hitboxWidthRatio: 0.7, hitboxHeightRatio: 0.95, hitboxOffsetX: 100, hitboxOffsetY: 50 }, 
+  { key: "pipe-5", scaleX: 0.5,scaleY: 0.6, hitboxWidthRatio: 0.6, hitboxHeightRatio: 0.95, hitboxOffsetX: 35, hitboxOffsetY: 5 }, 
+  { key: "pipe-2", scaleX: 0.5,scaleY: 0.6,  hitboxWidthRatio: 0.45, hitboxHeightRatio: 1, hitboxOffsetX: 30, hitboxOffsetY: 0 }, 
+  { key: "pipe-3", scaleX: 0.5,scaleY: 0.6,  hitboxWidthRatio: 0.95, hitboxHeightRatio: 0.95, hitboxOffsetX: 0, hitboxOffsetY: 15 }, 
+  { key: "pipe-4", scaleX: 0.5,scaleY: 0.6,  hitboxWidthRatio: 0.95, hitboxHeightRatio: 0.95, hitboxOffsetX: 0, hitboxOffsetY: 15 }, 
+  { key: "pipe-1", scaleX: 0.15,scaleY: 0.25, hitboxWidthRatio: 0.7, hitboxHeightRatio: 0.95, hitboxOffsetX: 100, hitboxOffsetY: 50 }, 
 ];
